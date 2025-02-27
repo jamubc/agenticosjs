@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #1a1a1a;
+            overflow: hidden;
+        }
+
+        .loader-container {
+            text-align: center;
+            position: relative;
+        }
+
+        .logo {
+            width: 200px;
+            height: 200px;
+            animation: bounce 2s infinite ease-in-out;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 300px;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: #00ff00;
+            border-radius: 10px;
+            transition: width 0.1s linear;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .loading-text {
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader-container">
+        <img src="https://i.seadn.io/gae/raXOujAwFBBlg3QiaaJzRw_MhtJzjmJBUcxWXclwgJoD223JZ_mPvyEj1_Lt4lq22H9dDsvvpltB_axe_I8ighPRLDG2UNyXQJkyrzA?auto=format&dpr=1&w=1000" 
+             alt="Pepe Loading" 
+             class="logo">
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+        <div class="loading-text">Loading...</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const progress = document.querySelector('.progress');
+            const container = document.querySelector('.loader-container');
+            let width = 0;
+            const loadingTime = 5000; // 5 seconds total loading time
+            const intervalTime = 50; // Update every 50ms
+            const increment = (100 / (loadingTime / intervalTime));
+
+            const loadingInterval = setInterval(() => {
+                width += increment;
+                progress.style.width = `${width}%`;
+
+                if (width >= 100) {
+                    clearInterval(loadingInterval);
+                    // Fade out animation before redirect
+                    container.style.animation = 'fadeOut 0.5s ease forwards';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'landing.html';
+                    }, 500); // Wait for fade out animation to complete
+                }
+            }, intervalTime);
+        });
+    </script>
+</body>
+</html>
