@@ -3,160 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Assistant</title>
+    <title>Pepe AI Multitool</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
-    <style>
-        /* Tab styling */
-        .main-tabs {
-            display: flex;
-            background-color: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .tab-button {
-            padding: 12px 20px;
-            font-weight: var(--font-weight-medium);
-            color: var(--text-secondary);
-            background: none;
-            border: none;
-            border-bottom: 2px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .tab-button.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
-        
-        .tab-button:hover:not(.active) {
-            color: var(--text-primary);
-            background-color: var(--bg-tertiary);
-        }
-        
-        .tab-content {
-            display: none;
-            height: calc(100% - 49px); /* 49px is the height of the tabs */
-        }
-        
-        .tab-content.active {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Node workflow specific styling */
-        #node-workflow {
-            position: relative;
-            height: 100%;
-            overflow: hidden;
-        }
-        
-        #node-sidebar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 220px;
-            height: 100%;
-            background-color: var(--bg-secondary);
-            border-right: 1px solid var(--border-color);
-            z-index: 5;
-            padding: 1rem 0.5rem;
-            overflow-y: auto;
-        }
-        
-        #node-sidebar h3 {
-            margin-bottom: 1rem;
-            padding-left: 0.5rem;
-            font-size: 1rem;
-            color: var(--text-secondary);
-        }
-        
-        .node-menu-item {
-            padding: 0.5rem 0.8rem;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-bottom: 0.2rem;
-            color: var(--text-primary);
-        }
-        
-        .node-menu-item:hover {
-            background-color: var(--bg-tertiary);
-        }
-        
-        #node-main {
-            position: absolute;
-            left: 220px;
-            top: 0;
-            width: calc(100% - 220px);
-            height: 100%;
-            overflow: hidden;
-        }
-        
-        #node-toolbar {
-            height: 40px;
-            display: flex;
-            align-items: center;
-            padding: 0 1rem;
-            background-color: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        #node-toolbar button {
-            padding: 0.5rem 0.8rem;
-            background-color: var(--primary-color);
-            color: var(--text-on-primary);
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.15s ease;
-            margin-right: 0.5rem;
-        }
-        
-        #node-toolbar button:hover {
-            background-color: var(--primary-hover);
-        }
-        
-        #node-canvas {
-            width: 100%;
-            height: calc(100% - 40px);
-            position: relative;
-            background: radial-gradient(circle, var(--bg-tertiary) 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-        
-        #connections {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-        
-        .node {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            position: absolute;
-            text-align: center;
-            cursor: grab;
-            display: flex;
-            flex-direction: column;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            user-select: none;
-            width: 240px;
-            padding-bottom: 10px;
-            overflow: hidden;
-        }
-        
-        .node:active {
-            cursor: grabbing;
-        }
-    </style>
 </head>
 <body>
     <div id="app-container" class="theme-default">
@@ -164,7 +15,7 @@
         <aside id="sidebar">
             <div class="sidebar-header">
                 <img src="assets/logo.svg" alt="Logo" class="logo">
-                <h1 class="app-title">AI Assistant</h1>
+                <h1 class="app-title">Pepe AI Multitool</h1>
                 <button id="sidebar-toggle" aria-label="Toggle Sidebar">
                     <i class="fas fa-chevron-left"></i>
                 </button>
@@ -220,7 +71,7 @@
             </div>
         </aside>
 
-        <!-- Main Content with Tabs -->
+        <!-- Main Content -->
         <main id="main-content">
             <header class="chat-header">
                 <div class="model-selector-container">
@@ -228,115 +79,125 @@
                         <option value="" disabled selected>Select AI Model</option>
                     </select>
                     <div class="model-info">
-                        <span id="model-badge" class="model-badge">GPT-4</span>
-                        <span id="model-status" class="model-status">Ready</span>
+                        <span id="model-badge" class="model-badge">No Model</span>
+                        <span id="model-status" class="model-status">Not Selected</span>
                     </div>
                 </div>
                 
-                <!-- Tab Navigation -->
-                <div class="main-tabs">
-                    <button class="tab-button active" data-tab="chat-tab">Chat</button>
-                    <button class="tab-button" data-tab="node-workflow-tab">Node Workflow</button>
-                </div>
+                <!-- Integrated Tab Navigation -->
+                <nav class="main-tabs-container">
+                    <div class="main-tabs">
+                        <button class="tab-button active" data-tab="chat-tab">
+                            <i class="fas fa-comment-dots"></i>
+                            <span>Chat</span>
+                        </button>
+                        <button class="tab-button" data-tab="node-workflow-tab">
+                            <i class="fas fa-project-diagram"></i>
+                            <span>Node Workflow</span>
+                        </button>
+                    </div>
+                </nav>
             </header>
 
-            <!-- Chat Tab Content -->
-            <div id="chat-tab" class="tab-content active">
-                <div id="message-container" class="message-container">
-                    <div class="welcome-screen">
-                        <img src="assets/welcome-illustration.svg" alt="Welcome" class="welcome-image">
-                        <h2>Welcome to AI Assistant</h2>
-                        <p>Start a conversation with one of the available AI models</p>
-                        <div class="quick-prompts">
-                            <button class="prompt-btn">Write a blog post about AI</button>
-                            <button class="prompt-btn">Help me debug my code</button>
-                            <button class="prompt-btn">Summarize a complex topic</button>
-                            <button class="prompt-btn">Create a content plan</button>
+            <div class="tab-contents">
+                <!-- Chat Tab Content -->
+                <div id="chat-tab" class="tab-content active">
+                    <div id="message-container" class="message-container">
+                        <div class="welcome-screen">
+                            <img src="assets/welcome-illustration.svg" alt="Welcome" class="welcome-image">
+                            <h2>Welcome to Pepe AI Multitool</h2>
+                            <p>Start a conversation with one of the available AI models</p>
+                            <div class="quick-prompts">
+                                <button class="prompt-btn">Write a blog post about AI</button>
+                                <button class="prompt-btn">Help me debug my code</button>
+                                <button class="prompt-btn">Summarize a complex topic</button>
+                                <button class="prompt-btn">Create a content plan</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-container">
+                        <div id="input-feedback" class="input-feedback">
+                            <span id="feedback-message"></span>
+                            <button id="clear-feedback" class="clear-btn" aria-label="Clear Feedback">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        
+                        <div id="attachment-preview" class="attachment-preview"></div>
+                        
+                        <div class="input-wrapper">
+                            <button id="voice-input-btn" class="voice-btn" aria-label="Voice Input">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            
+                            <div class="textarea-container">
+                                <textarea 
+                                    id="message-input" 
+                                    placeholder="Type your message here... (Shift+Enter for new line)"
+                                    rows="1" 
+                                    aria-label="Message Input">
+                                </textarea>
+                            </div>
+                            
+                            <div class="input-actions">
+                                <button id="upload-btn" class="action-btn" aria-label="Upload File">
+                                    <i class="fas fa-paperclip"></i>
+                                </button>
+                                <button id="camera-btn" class="action-btn" aria-label="Take Photo">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                                <button id="send-btn" class="send-btn" disabled aria-label="Send Message">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="input-utils">
+                            <div class="typing-indicator">
+                                <span class="model-name">Model:</span>
+                                <span id="model-typing-status">Idle</span>
+                            </div>
+                            <div class="token-counter">
+                                <span id="token-count">0</span>
+                                <span>tokens</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="input-container">
-                    <div id="input-feedback" class="input-feedback">
-                        <span id="feedback-message"></span>
-                        <button id="clear-feedback" class="clear-btn" aria-label="Clear Feedback">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    
-                    <div id="attachment-preview" class="attachment-preview"></div>
-                    
-                    <div class="input-wrapper">
-                        <button id="voice-input-btn" class="voice-btn" aria-label="Voice Input">
-                            <i class="fas fa-microphone"></i>
-                        </button>
-                        
-                        <div class="textarea-container">
-                            <textarea 
-                                id="message-input" 
-                                placeholder="Type your message here... (Shift+Enter for new line)"
-                                rows="1" 
-                                aria-label="Message Input">
-                            </textarea>
-                        </div>
-                        
-                        <div class="input-actions">
-                            <button id="upload-btn" class="action-btn" aria-label="Upload File">
-                                <i class="fas fa-paperclip"></i>
-                            </button>
-                            <button id="camera-btn" class="action-btn" aria-label="Take Photo">
-                                <i class="fas fa-camera"></i>
-                            </button>
-                            <button id="send-btn" class="send-btn" disabled aria-label="Send Message">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="input-utils">
-                        <div class="typing-indicator">
-                            <span class="model-name">Model:</span>
-                            <span id="model-typing-status">Idle</span>
-                        </div>
-                        <div class="token-counter">
-                            <span id="token-count">0</span>
-                            <span>tokens</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Node Workflow Tab Content -->
-            <div id="node-workflow-tab" class="tab-content">
-                <div id="node-workflow">
-                    <!-- Node Workflow Sidebar -->
-                    <div id="node-sidebar">
-                        <h3>Request Types</h3>
-                        <div class="node-menu-item" onclick="addNode('URL')" id="url">Deep Research Node</div>
-                        <div class="node-menu-item" onclick="addNode('PICTURE')" id="picture">Multi Modal Node</div>
-                        <div class="node-menu-item" onclick="addNode('CHAT')" id="chat">CHAT</div>
-                        <hr/>
-                        <br>
-                        
-                        <h3>Other</h3>
-                        <div class="node-menu-item" onclick="alert('Future feature!')">Settings</div>
-                        <div class="node-menu-item" onclick="alert('Help not implemented!')">Help</div>
-                        <hr/>
-                        <br>
-                        <h3>History</h3>
-                    </div>
-
-                    <!-- Node Workflow Main Content -->
-                    <div id="node-main">
-                        <!-- Toolbar -->
-                        <div id="node-toolbar">
-                            <button onclick="executeRequests()">Execute All</button>
+                <!-- Node Workflow Tab Content -->
+                <div id="node-workflow-tab" class="tab-content">
+                    <div id="node-workflow">
+                        <!-- Node Workflow Sidebar -->
+                        <div id="node-sidebar">
+                            <h3>Request Types</h3>
+                            <div class="node-menu-item" data-node-type="URL" id="url">Deep Research Node</div>
+                            <div class="node-menu-item" data-node-type="PICTURE" id="picture">Multi Modal Node</div>
+                            <div class="node-menu-item" data-node-type="CHAT" id="chat">CHAT</div>
+                            <hr/>
+                            <br>
+                            
+                            <h3>Other</h3>
+                            <div class="node-menu-item" id="node-settings">Settings</div>
+                            <div class="node-menu-item" id="node-help">Help</div>
+                            <hr/>
+                            <br>
+                            <h3>History</h3>
                         </div>
 
-                        <!-- Canvas -->
-                        <div class="canvas" id="node-canvas">
-                            <!-- SVG container for connection lines -->
-                            <svg id="connections"></svg>
+                        <!-- Node Workflow Main Content -->
+                        <div id="node-main">
+                            <!-- Toolbar -->
+                            <div id="node-toolbar">
+                                <button id="execute-all-btn">Execute All</button>
+                            </div>
+
+                            <!-- Canvas -->
+                            <div class="canvas" id="node-canvas">
+                                <!-- SVG container for connection lines -->
+                                <svg id="connections"></svg>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -618,12 +479,6 @@
     <!-- Toast Notifications Container -->
     <div id="toast-container" class="toast-container"></div>
 
-    <!-- Node Workflow Scripts -->
-    <script type="module" src="old_versions/agentjs-main/nodeGraph.js"></script>
-    <script type="module" src="old_versions/agentjs-main/requestsOffline.js"></script>
-    <script type="module" src="old_versions/agentjs-main/tooling.js"></script>
-    <script src="old_versions/agentjs-main/index.js"></script>
-
     <!-- Main Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
@@ -635,41 +490,5 @@
     <script src="models.js"></script>
     <script src="chat.js"></script>
     <script src="app.js"></script>
-
-    <!-- Tab Switching Script -->
-    <script>
-        // Tab switching functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const tabButtons = document.querySelectorAll('.main-tabs .tab-button');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            // Initial setup - make sure chat is active
-            document.getElementById('chat-tab').classList.add('active');
-            document.getElementById('node-workflow-tab').classList.remove('active');
-            
-            // Tab button click handler
-            tabButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    // Remove active class from all buttons and contents
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
-                    
-                    // Add active class to clicked button and corresponding content
-                    this.classList.add('active');
-                    const tabId = this.getAttribute('data-tab');
-                    document.getElementById(tabId).classList.add('active');
-                });
-            });
-            
-            // Node workflow button in sidebar should switch to node workflow tab
-            document.getElementById('node-workflow-btn').addEventListener('click', function() {
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                tabContents.forEach(content => content.classList.remove('active'));
-                
-                document.querySelector('.tab-button[data-tab="node-workflow-tab"]').classList.add('active');
-                document.getElementById('node-workflow-tab').classList.add('active');
-            });
-        });
-    </script>
 </body>
 </html>

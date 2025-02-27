@@ -1,31 +1,48 @@
 /**
- * Main application entry point for the AI Assistant
+ * Main application entry point for the Pepe AI Multitool
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all modules
-    initializeApp();
-  });
-  
-  /**
-   * Initialize the application
-   */
-  function initializeApp() {
-    try {
+  // Initialize all modules
+  initializeApp();
+});
+
+/**
+* Initialize the application
+*/
+function initializeApp() {
+  try {
+      console.log('Initializing Pepe AI Multitool...');
+      
       // Initialize storage first
       Storage.init();
       
-      // Initialize UI components
-      UI.init();
+      // Initialize settings
+      Settings.init();
       
       // Initialize speech capabilities
-      Speech.init();
+      if (typeof Speech !== 'undefined') {
+          Speech.init();
+      } else {
+          console.warn('Speech module not found');
+      }
       
       // Initialize models
-      Models.init();
+      if (typeof Models !== 'undefined') {
+          Models.init();
+      } else {
+          console.warn('Models module not found');
+      }
       
       // Initialize chat functionality
-      Chat.init();
+      if (typeof Chat !== 'undefined') {
+          Chat.init();
+      } else {
+          console.warn('Chat module not found');
+      }
+      
+      // UI should be initialized after other modules
+      // This is handled by the UI module itself with DOMContentLoaded
       
       // Add keyboard shortcuts
       setupKeyboardShortcuts();
@@ -33,272 +50,207 @@ document.addEventListener('DOMContentLoaded', function() {
       // Check browser compatibility
       checkBrowserCompatibility();
       
-      console.log('AI Assistant initialized successfully');
-    } catch (error) {
+      // Add legacy global functions for node workflow
+      setupLegacyGlobals();
+      
+      console.log('Pepe AI Multitool initialized successfully');
+  } catch (error) {
       console.error('Error initializing application:', error);
       
       // Show error message to user
       const errorMessage = document.createElement('div');
       errorMessage.className = 'error-message';
       errorMessage.innerHTML = `
-        <h2>Error Initializing Application</h2>
-        <p>${error.message || 'An unknown error occurred'}</p>
-        <button onclick="window.location.reload()">Reload</button>
+          <h2>Error Initializing Application</h2>
+          <p>${error.message || 'An unknown error occurred'}</p>
+          <button onclick="window.location.reload()">Reload</button>
       `;
       
       document.body.innerHTML = '';
       document.body.appendChild(errorMessage);
-    }
   }
-  
-  /**
-   * Set up keyboard shortcuts
-   */
-  function setupKeyboardShortcuts() {
-    document.addEventListener('keydown', function(e) {
+}
+
+/**
+* Set up keyboard shortcuts
+*/
+function setupKeyboardShortcuts() {
+  document.addEventListener('keydown', function(e) {
       // Cmd/Ctrl + Enter - Send message even if textarea has multiple lines
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-        if (document.activeElement === UI.elements.messageInput) {
-          e.preventDefault();
-          UI.handleSendMessage();
-        }
+          const messageInput = document.getElementById('message-input');
+          if (document.activeElement === messageInput) {
+              e.preventDefault();
+              UI.handleSendMessage();
+          }
       }
       
       // Cmd/Ctrl + / - Toggle sidebar
       if ((e.metaKey || e.ctrlKey) && e.key === '/') {
-        e.preventDefault();
-        UI.toggleSidebar();
+          e.preventDefault();
+          UI.toggleSidebar();
       }
       
       // Cmd/Ctrl + N - New chat
       if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
-        e.preventDefault();
-        Chat.startNewChat();
+          e.preventDefault();
+          if (typeof Chat !== 'undefined' && Chat.startNewChat) {
+              Chat.startNewChat();
+          }
       }
       
       // Escape - Close any open modal
       if (e.key === 'Escape') {
-        const openModal = document.querySelector('.modal.visible');
-        if (openModal) {
-          e.preventDefault();
-          UI.hideModal(openModal.id);
-        }
+          const openModal = document.querySelector('.modal.visible');
+          if (openModal) {
+              e.preventDefault();
+              UI.hideModal(openModal.id);
+          }
       }
-    });
-  }
+  });
+}
+
+/**
+* Check browser compatibility
+*/
+function checkBrowserCompatibility() {
+  const warnings = [];
   
-  /**
-   * Check browser compatibility
-   */
-  function checkBrowserCompatibility() {
-    const warnings = [];
-    
-    // Check for IndexedDB/localStorage support
-    if (!window.localStorage) {
+  // Check for IndexedDB/localStorage support
+  if (!window.localStorage) {
       warnings.push('LocalStorage is not supported. Chat history and settings cannot be saved.');
-    }
-    
-    // Check for fetch API
-    if (!window.fetch) {
-      warnings.push('Fetch API is not supported. Communication with AI models may not work.');
-    }
-    
-    // Check for speech synthesis
-    if (!window.speechSynthesis) {
-      warnings.push('Speech Synthesis is not supported. Text-to-speech features will be disabled.');
-    }
-    
-    // Check for speech recognition
-    if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-      warnings.push('Speech Recognition is not supported. Voice input features will be disabled.');
-    }
-    
-    // Display warnings if any
-    if (warnings.length > 0) {
-      warnings.forEach(warning => {
-        Utils.showToast(warning, 'warning', 'Compatibility Warning', 6000);
-      });
-    }
   }
   
-  /**
-   * Settings management object
-   */
-  const Settings = {
-    /**
-     * Load settings into UI
-     */
-    loadSettings: function() {
-      const settings = Storage.getSettings();
-      
-      // Apply settings to UI elements
-      
-      // Theme
-      document.querySelectorAll('.theme-option').forEach(option => {
-        option.classList.toggle('active', option.getAttribute('data-theme') === settings.theme);
+  // Check for fetch API
+  if (!window.fetch) {
+      warnings.push('Fetch API is not supported. Communication with AI models may not work.');
+  }
+  
+  // Check for speech synthesis
+  if (!window.speechSynthesis) {
+      warnings.push('Speech Synthesis is not supported. Text-to-speech features will be disabled.');
+  }
+  
+  // Check for speech recognition
+  if (!('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+      warnings.push('Speech Recognition is not supported. Voice input features will be disabled.');
+  }
+  
+  // Display warnings if any
+  if (warnings.length > 0) {
+      warnings.forEach(warning => {
+          Utils.showToast(warning, 'warning', 'Compatibility Warning', 6000);
       });
+  }
+}
+
+/**
+* Setup legacy global functions for node workflow
+*/
+function setupLegacyGlobals() {
+  // These functions need to be in global scope for the old node workflow code
+  window.addNode = function(type) {
+      console.log(`Creating node of type: ${type}`);
       
-      // Font size
-      const fontSizeSlider = document.getElementById('font-size-slider');
-      const fontSizeValue = document.getElementById('font-size-value');
-      if (fontSizeSlider && fontSizeValue) {
-        fontSizeSlider.value = settings.fontSize;
-        fontSizeValue.textContent = settings.fontSize;
-      }
-      
-      // Reduce motion
-      const reduceMotionCheckbox = document.getElementById('reduce-motion');
-      if (reduceMotionCheckbox) {
-        reduceMotionCheckbox.checked = settings.reduceMotion;
-      }
-      
-      // Local storage only
-      const localStorageOnlyCheckbox = document.getElementById('local-storage-only');
-      if (localStorageOnlyCheckbox) {
-        localStorageOnlyCheckbox.checked = settings.localStorageOnly;
-      }
-      
-      // Clear on exit
-      const clearOnExitCheckbox = document.getElementById('clear-on-exit');
-      if (clearOnExitCheckbox) {
-        clearOnExitCheckbox.checked = settings.clearOnExit;
-      }
-      
-      // Disable analytics
-      const disableAnalyticsCheckbox = document.getElementById('disable-analytics');
-      if (disableAnalyticsCheckbox) {
-        disableAnalyticsCheckbox.checked = settings.disableAnalytics;
-      }
-      
-      // Auto read responses
-      const autoReadResponsesCheckbox = document.getElementById('auto-read-responses');
-      if (autoReadResponsesCheckbox) {
-        autoReadResponsesCheckbox.checked = settings.autoReadResponses;
-      }
-      
-      // Speech rate
-      const speechRateSlider = document.getElementById('speech-rate-slider');
-      const speechRateValue = document.getElementById('speech-rate-value');
-      if (speechRateSlider && speechRateValue) {
-        speechRateSlider.value = settings.speechRate;
-        speechRateValue.textContent = settings.speechRate;
-      }
-      
-      // Speech recognition language
-      const speechRecognitionLanguage = document.getElementById('speech-recognition-language');
-      if (speechRecognitionLanguage) {
-        speechRecognitionLanguage.value = settings.speechRecognitionLang;
-      }
-      
-      // Update integrations list
-      Models.updateIntegrationsList();
-    },
-    
-    /**
-     * Save settings from UI
-     */
-    saveSettings: function() {
-      // Get values from UI elements
-      
-      // Theme
-      const activeThemeOption = document.querySelector('.theme-option.active');
-      const theme = activeThemeOption ? activeThemeOption.getAttribute('data-theme') : 'default';
-      
-      // Font size
-      const fontSize = parseInt(document.getElementById('font-size-slider').value);
-      
-      // Reduce motion
-      const reduceMotion = document.getElementById('reduce-motion').checked;
-      
-      // Local storage only
-      const localStorageOnly = document.getElementById('local-storage-only').checked;
-      
-      // Clear on exit
-      const clearOnExit = document.getElementById('clear-on-exit').checked;
-      
-      // Disable analytics
-      const disableAnalytics = document.getElementById('disable-analytics').checked;
-      
-      // Auto read responses
-      const autoReadResponses = document.getElementById('auto-read-responses').checked;
-      
-      // Speech rate
-      const speechRate = parseFloat(document.getElementById('speech-rate-slider').value);
-      
-      // Speech recognition language
-      const speechRecognitionLang = document.getElementById('speech-recognition-language').value;
-      
-      // Create settings object
-      const settings = {
-        theme,
-        fontSize,
-        reduceMotion,
-        localStorageOnly,
-        clearOnExit,
-        disableAnalytics,
-        autoReadResponses,
-        speechRate,
-        speechRecognitionLang,
-        // Preserve voice selection
-        speechVoice: Storage.getSettings().speechVoice
-      };
-      
-      // Save settings
-      Storage.saveSettings(settings);
-      
-      // Apply settings
-      UI.applyTheme(theme);
-      UI.applyFontSize(fontSize);
-      Speech.setSpeechRate(speechRate);
-      Speech.setRecognitionLanguage(speechRecognitionLang);
-      
-      // Show success message
-      Utils.showToast('Settings saved successfully', 'success');
-    },
-    
-    /**
-     * Reset settings to defaults
-     */
-    resetSettings: function() {
-      Utils.showConfirm(
-        'Are you sure you want to reset all settings to defaults?',
-        'Reset Settings',
-        () => {
-          Storage.saveSettings(Config.defaultSettings);
-          this.loadSettings();
+      // Check if NodeItem class exists
+      if (typeof NodeItem !== 'undefined') {
+          // Create a node DOM element
+          const nodeDom = document.createElement('div');
+          nodeDom.className = 'node';
+          nodeDom.style.top = `${Math.random() * 300}px`;
+          nodeDom.style.left = `${Math.random() * 300}px`;
+          const nodeId = `node-${window.nodeCounter || 0}`;
+          window.nodeCounter = (window.nodeCounter || 0) + 1;
+          nodeDom.setAttribute('id', nodeId);
           
-          // Apply default theme and font size
-          UI.applyTheme(Config.defaultSettings.theme);
-          UI.applyFontSize(Config.defaultSettings.fontSize);
+          // Make it draggable
+          nodeDom.onmousedown = window.startDrag;
+          nodeDom.onclick = window.handleNodeClick;
           
-          Utils.showToast('Settings reset to defaults', 'success');
-        }
-      );
-    }
+          // Append to canvas
+          const canvas = document.getElementById('node-canvas');
+          if (canvas) {
+              canvas.appendChild(nodeDom);
+              
+              // Create NodeItem instance
+              try {
+                  const nodeObj = new NodeItem(type, nodeDom, window.connecting);
+                  window.nodeItems = window.nodeItems || [];
+                  window.nodeItems.push(nodeObj);
+                  
+                  console.log(`Node created: ${nodeId}`);
+                  
+                  // Show tooltip if it's the first node
+                  if (nodeId === 'node-0' && typeof addInteractivity === 'function') {
+                      addInteractivity("#node-0", {
+                          tooltip: "this is a node",
+                          popup: "<h3>offline mode:</h3><p>to use offline mode only have one chat node up</p>",
+                          position: "top",
+                          autoHideDelay: 1000,
+                      });
+                  }
+              } catch (error) {
+                  console.error('Error creating node:', error);
+                  Utils.showToast('Error creating node', 'error');
+              }
+          } else {
+              console.error('Node canvas not found');
+          }
+      } else {
+          console.warn('NodeItem class not found');
+          Utils.showToast('Node workflow functionality not fully loaded', 'warning');
+      }
   };
   
-  // Handle visibility change to implement "Clear on exit" if needed
-  document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState === 'hidden') {
+  window.executeRequests = function() {
+      console.log('Executing all node requests');
+      
+      if (window.nodeItems && Array.isArray(window.nodeItems)) {
+          window.nodeItems.forEach(node => {
+              if (typeof node.run === 'function') {
+                  node.run();
+              }
+          });
+      } else {
+          console.warn('No nodes to execute');
+          Utils.showToast('No nodes to execute', 'warning');
+      }
+  };
+  
+  // Initialize global variables for node workflow
+  window.nodeCounter = 0;
+  window.nodeItems = [];
+  window.connections = [];
+  window.connecting = false;
+  window.connectionStartNode = null;
+  window.selectedNode = null;
+  
+  console.log('Legacy global functions for node workflow setup complete');
+}
+
+// Handle visibility change to implement "Clear on exit" if needed
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'hidden') {
       const settings = Storage.getSettings();
       if (settings.clearOnExit) {
-        // Clear all chats but keep settings and integrations
-        const chats = Storage.getChats();
-        chats.forEach(chat => {
-          Storage.deleteChat(chat.id);
-        });
+          // Clear all chats but keep settings and integrations
+          const chats = Storage.getChats();
+          chats.forEach(chat => {
+              Storage.deleteChat(chat.id);
+          });
       }
-    }
-  });
-  
-  // Handle beforeunload to show confirmation if needed
-  window.addEventListener('beforeunload', function(e) {
-    // Check if we have unsaved changes
-    if (Chat.currentChat && Chat.currentChat.messages.length > 0 && 
-        Chat.currentChat.messages[Chat.currentChat.messages.length - 1].role === 'user') {
+  }
+});
+
+// Handle beforeunload to show confirmation if needed
+window.addEventListener('beforeunload', function(e) {
+  // Check if we have unsaved changes
+  if (typeof Chat !== 'undefined' && Chat.currentChat && 
+      Chat.currentChat.messages.length > 0 && 
+      Chat.currentChat.messages[Chat.currentChat.messages.length - 1].role === 'user') {
       // The user sent a message but hasn't received a response yet
       e.preventDefault();
       e.returnValue = '';
       return '';
-    }
-  });
+  }
+});
