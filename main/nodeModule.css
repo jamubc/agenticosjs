@@ -1,0 +1,129 @@
+/* Node Workflow Styles */
+
+/* NODES */
+.node {
+  background: #555;
+  border: 1px solid #888;
+  color: #eee;
+  position: absolute;
+  cursor: grab;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  user-select: none;
+  min-width: 200px;
+  min-height: 100px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.node:active {
+  cursor: grabbing;
+}
+
+/* Node Sidebar */
+#node-sidebar {
+  width: 220px;
+  height: 100%;
+  background-color: #333;
+  border-right: 1px solid #555;
+  padding: 1rem 0.5rem;
+  overflow-y: auto;
+}
+
+#node-sidebar h3 {
+  margin-bottom: 1rem;
+  padding-left: 0.5rem;
+  font-size: 1rem;
+  color: #ccc;
+}
+
+.node-menu-item {
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 0.2rem;
+  color: #eee;
+}
+
+.node-menu-item:hover {
+  background-color: #555;
+}
+
+/* Node Main Content */
+#node-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Node Toolbar */
+#node-toolbar {
+  padding: 10px;
+  background-color: #444;
+  border-bottom: 1px solid #555;
+  display: flex;
+  justify-content: flex-end;
+}
+
+#node-toolbar button {
+  cursor: pointer;
+  padding: 0.5rem 0.8rem;
+  border: none;
+  background-color: #777;
+  color: #eee;
+  border-radius: 4px;
+}
+
+#node-toolbar button:hover {
+  background-color: #999;
+}
+
+/* CANVAS: dotted background */
+.canvas {
+  flex: 1;
+  position: relative;
+  background: radial-gradient(circle, #555 1px, transparent 1px);
+  background-size: 20px 20px;
+  overflow: auto;
+}
+
+/* SVG for connections */
+#connections {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  stroke: #aaa;
+}
+
+/* Node Workflow Container */
+#node-workflow {
+  display: flex;
+  height: 100%;
+}
+
+/* Node inputs and outputs */
+.node textarea {
+  background-color: #444;
+  color: #eee;
+  border: 1px solid #666;
+  padding: 5px;
+  resize: none;
+  width: 100%;
+}
+
+.node input {
+  background-color: #444;
+  color: #eee;
+  border: 1px solid #666;
+  padding: 5px;
+}
+
+/* Style for node icons */
+.node i {
+  color: #eee;
+}

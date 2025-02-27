@@ -7,11 +7,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="settings.css">
+    <link rel="stylesheet" href="nodeModule.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
 </head>
 <body>
     <div id="app-container" class="theme-default">
-        <!-- Sidebar -->
         <aside id="sidebar">
             <div class="sidebar-header">
                 <img src="assets/logo.svg" alt="Logo" class="logo">
@@ -20,19 +21,16 @@
                     <i class="fas fa-chevron-left"></i>
                 </button>
             </div>
-            
             <div class="sidebar-section">
                 <button id="new-chat-btn" class="primary-btn">
                     <i class="fas fa-plus"></i>
                     <span>New Chat</span>
                 </button>
             </div>
-            
             <div class="sidebar-section">
                 <h2 class="section-title">Recent Chats</h2>
                 <div id="chat-history-list" class="chat-list"></div>
             </div>
-            
             <div class="sidebar-section">
                 <h2 class="section-title">Tools</h2>
                 <div class="tools-list">
@@ -54,7 +52,6 @@
                     </button>
                 </div>
             </div>
-            
             <div class="sidebar-footer">
                 <button id="settings-btn" class="icon-btn" aria-label="Settings">
                     <i class="fas fa-cog"></i>
@@ -70,8 +67,6 @@
                 </div>
             </div>
         </aside>
-
-        <!-- Main Content -->
         <main id="main-content">
             <header class="chat-header">
                 <div class="model-selector-container">
@@ -83,8 +78,6 @@
                         <span id="model-status" class="model-status">Not Selected</span>
                     </div>
                 </div>
-                
-                <!-- Integrated Tab Navigation -->
                 <nav class="main-tabs-container">
                     <div class="main-tabs">
                         <button class="tab-button active" data-tab="chat-tab">
@@ -98,9 +91,7 @@
                     </div>
                 </nav>
             </header>
-
             <div class="tab-contents">
-                <!-- Chat Tab Content -->
                 <div id="chat-tab" class="tab-content active">
                     <div id="message-container" class="message-container">
                         <div class="welcome-screen">
@@ -115,7 +106,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="input-container">
                         <div id="input-feedback" class="input-feedback">
                             <span id="feedback-message"></span>
@@ -123,14 +113,11 @@
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
-                        
                         <div id="attachment-preview" class="attachment-preview"></div>
-                        
                         <div class="input-wrapper">
                             <button id="voice-input-btn" class="voice-btn" aria-label="Voice Input">
                                 <i class="fas fa-microphone"></i>
                             </button>
-                            
                             <div class="textarea-container">
                                 <textarea 
                                     id="message-input" 
@@ -139,7 +126,6 @@
                                     aria-label="Message Input">
                                 </textarea>
                             </div>
-                            
                             <div class="input-actions">
                                 <button id="upload-btn" class="action-btn" aria-label="Upload File">
                                     <i class="fas fa-paperclip"></i>
@@ -152,7 +138,6 @@
                                 </button>
                             </div>
                         </div>
-                        
                         <div class="input-utils">
                             <div class="typing-indicator">
                                 <span class="model-name">Model:</span>
@@ -162,14 +147,14 @@
                                 <span id="token-count">0</span>
                                 <span>tokens</span>
                             </div>
+                            <div class="word-counter">
+                                <span id="word-count">0</span> / 1000 words
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Node Workflow Tab Content -->
                 <div id="node-workflow-tab" class="tab-content">
                     <div id="node-workflow">
-                        <!-- Node Workflow Sidebar -->
                         <div id="node-sidebar">
                             <h3>Request Types</h3>
                             <div class="node-menu-item" data-node-type="URL" id="url">Deep Research Node</div>
@@ -177,7 +162,6 @@
                             <div class="node-menu-item" data-node-type="CHAT" id="chat">CHAT</div>
                             <hr/>
                             <br>
-                            
                             <h3>Other</h3>
                             <div class="node-menu-item" id="node-settings">Settings</div>
                             <div class="node-menu-item" id="node-help">Help</div>
@@ -185,17 +169,11 @@
                             <br>
                             <h3>History</h3>
                         </div>
-
-                        <!-- Node Workflow Main Content -->
                         <div id="node-main">
-                            <!-- Toolbar -->
                             <div id="node-toolbar">
                                 <button id="execute-all-btn">Execute All</button>
                             </div>
-
-                            <!-- Canvas -->
                             <div class="canvas" id="node-canvas">
-                                <!-- SVG container for connection lines -->
                                 <svg id="connections"></svg>
                             </div>
                         </div>
@@ -204,60 +182,104 @@
             </div>
         </main>
     </div>
-
-    <!-- File Upload Input (Hidden) -->
     <input type="file" id="file-upload" multiple accept="image/*,application/pdf,.doc,.docx,.txt,.csv,.xlsx" hidden>
-
-    <!-- Settings Modal -->
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Settings</h2>
+                <p class="tab-note">Your privacy is our top priority. Manage your data and preferences with full control.</p>
                 <button class="close-modal-btn" aria-label="Close Modal">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
             <div class="modal-tabs">
-                <button class="tab-btn active" data-tab="ai-integrations">AI Integrations</button>
-                <button class="tab-btn" data-tab="appearance">Appearance</button>
-                <button class="tab-btn" data-tab="privacy">Privacy</button>
-                <button class="tab-btn" data-tab="accessibility">Accessibility</button>
+                <button class="tab-btn active" data-tab="privacy" data-note="Your privacy is our top priority. Manage your data and preferences with full control.">
+                    <i class="fas fa-lock"></i> Privacy
+                </button>
+                <button class="tab-btn" data-tab="ai-integrations" data-note="Configure your AI provider integrations securely. Remove any integration at any time.">
+                    <i class="fas fa-robot"></i> AI Integrations
+                </button>
+                <button class="tab-btn" data-tab="appearance" data-note="Customize the look and feel to suit your preferences.">
+                    <i class="fas fa-paint-brush"></i> Appearance
+                </button>
+                <button class="tab-btn" data-tab="accessibility" data-note="Adjust settings to make the application more usable for your needs.">
+                    <i class="fas fa-universal-access"></i> Accessibility
+                </button>
             </div>
-            
             <div class="modal-body">
-                <div id="ai-integrations-tab" class="tab-content active">
+                <div id="privacy-tab" class="tab-content active">
+                    <h3>Privacy</h3>
+                    <div class="form-group">
+                        <label>Chat Data Persistence</label>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" name="chatPersistence" value="persistent" checked>
+                                Save chat history for future sessions
+                            </label>
+                            <label>
+                                <input type="radio" name="chatPersistence" value="session-only">
+                                Do not save chat history; clear when closing the tab
+                            </label>
+                        </div>
+                        <p class="form-help">For enhanced privacy, select "Do not save chat history."</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="clear-on-exit">
+                            <span>Automatically delete chat history when closing the application</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="disable-analytics" checked>
+                            <span>Disable all analytics and tracking</span>
+                            <span class="recommended">Recommended</span>
+                        </label>
+                    </div>
+                    <div class="actions-group">
+                        <button id="export-data-btn" class="secondary-btn">
+                            <i class="fas fa-download"></i>
+                            Export My Data
+                        </button>
+                        <button id="clear-all-data-btn" class="danger-btn">
+                            <i class="fas fa-trash"></i>
+                            Delete All My Data
+                        </button>
+                        <button id="clear-chats-btn" class="danger-btn">
+                            <i class="fas fa-trash"></i>
+                            Delete Chat History
+                        </button>
+                    </div>
+                </div>
+                <div id="ai-integrations-tab" class="tab-content">
                     <h3>Configure AI Providers</h3>
+                    <p class="integration-note">Integrating with AI providers may share data with them. Remove any integration anytime.</p>
                     <div id="active-integrations" class="integrations-list"></div>
-                    
                     <div class="add-integration-form">
                         <h4>Add New Integration</h4>
                         <div class="form-group">
                             <label for="integration-name">Name</label>
                             <input type="text" id="integration-name" placeholder="My OpenAI Integration">
                         </div>
-                        
                         <div class="form-group">
                             <label for="integration-type">Provider</label>
                             <select id="integration-type">
                                 <option value="" selected disabled>Select provider</option>
                             </select>
+                            <a href="#" class="help-link" title="Learn how to set up API keys securely">Help</a>
                         </div>
-                        
                         <div id="integration-fields" class="integration-fields"></div>
-                        
                         <div class="form-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="integration-rotate-keys">
-                                <span>Enable key rotation (recommended)</span>
+                                <span>Enable key rotation</span>
+                                <span class="recommended">Recommended</span>
                             </label>
                             <p class="form-help">Generates a new secure key for each API request</p>
                         </div>
-                        
                         <button id="add-integration-btn" class="primary-btn">Add Integration</button>
                     </div>
                 </div>
-                
                 <div id="appearance-tab" class="tab-content">
                     <h3>Appearance</h3>
                     <div class="form-group">
@@ -281,7 +303,6 @@
                             </button>
                         </div>
                     </div>
-                    
                     <div class="form-group">
                         <label>Font Size</label>
                         <div class="range-slider">
@@ -289,7 +310,6 @@
                             <div class="slider-value"><span id="font-size-value">16</span>px</div>
                         </div>
                     </div>
-                    
                     <div class="form-group">
                         <label class="checkbox-label">
                             <input type="checkbox" id="reduce-motion">
@@ -297,42 +317,6 @@
                         </label>
                     </div>
                 </div>
-                
-                <div id="privacy-tab" class="tab-content">
-                    <h3>Privacy</h3>
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="local-storage-only" checked>
-                            <span>Store data locally only (recommended)</span>
-                        </label>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="clear-on-exit">
-                            <span>Clear chat history on exit</span>
-                        </label>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="disable-analytics" checked>
-                            <span>Disable all analytics and tracking</span>
-                        </label>
-                    </div>
-                    
-                    <div class="actions-group">
-                        <button id="export-data-btn" class="secondary-btn">
-                            <i class="fas fa-download"></i>
-                            Export My Data
-                        </button>
-                        <button id="clear-all-data-btn" class="danger-btn">
-                            <i class="fas fa-trash"></i>
-                            Clear All Data
-                        </button>
-                    </div>
-                </div>
-                
                 <div id="accessibility-tab" class="tab-content">
                     <h3>Accessibility</h3>
                     <div class="form-group">
@@ -341,7 +325,6 @@
                             <option value="" selected disabled>Loading voices...</option>
                         </select>
                     </div>
-                    
                     <div class="form-group">
                         <label>Speech Rate</label>
                         <div class="range-slider">
@@ -349,14 +332,12 @@
                             <div class="slider-value"><span id="speech-rate-value">1</span>x</div>
                         </div>
                     </div>
-                    
                     <div class="form-group">
                         <label class="checkbox-label">
                             <input type="checkbox" id="auto-read-responses">
                             <span>Automatically read AI responses</span>
                         </label>
                     </div>
-                    
                     <div class="form-group">
                         <label>Speech Recognition Language</label>
                         <select id="speech-recognition-language">
@@ -371,15 +352,12 @@
                     </div>
                 </div>
             </div>
-            
             <div class="modal-footer">
                 <button class="cancel-btn">Cancel</button>
                 <button id="save-settings-btn" class="primary-btn">Save Settings</button>
             </div>
         </div>
     </div>
-
-    <!-- Camera Modal -->
     <div id="camera-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -388,7 +366,6 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
             <div class="modal-body">
                 <div id="camera-container">
                     <video id="camera-preview" autoplay playsinline></video>
@@ -403,7 +380,6 @@
                         </button>
                     </div>
                 </div>
-                
                 <div id="camera-preview-container" hidden>
                     <canvas id="capture-canvas"></canvas>
                     <div class="capture-controls">
@@ -420,8 +396,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Voice Recording Modal -->
     <div id="voice-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -430,7 +404,6 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
             <div class="modal-body voice-modal-body">
                 <div class="voice-visualization">
                     <div class="voice-waves">
@@ -442,11 +415,9 @@
                     </div>
                     <div id="voice-status">Listening...</div>
                 </div>
-                
                 <div class="voice-transcript">
                     <p id="voice-transcript-text">Speak now...</p>
                 </div>
-                
                 <div class="voice-controls">
                     <button id="voice-stop-btn" class="secondary-btn">
                         <i class="fas fa-stop"></i>
@@ -460,8 +431,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Alert/Confirm Modal -->
     <div id="alert-modal" class="modal">
         <div class="modal-content alert-content">
             <div class="alert-icon">
@@ -475,11 +444,7 @@
             </div>
         </div>
     </div>
-
-    <!-- Toast Notifications Container -->
     <div id="toast-container" class="toast-container"></div>
-
-    <!-- Main Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="config.js"></script>
@@ -489,6 +454,37 @@
     <script src="speech.js"></script>
     <script src="models.js"></script>
     <script src="chat.js"></script>
+    <script src="settings.js"></script>
     <script src="app.js"></script>
+    <script type="module">
+        import { initNodeWorkflow } from './nodeModule.js';
+        
+        // Initialize the node workflow when the tab is clicked
+        document.addEventListener('DOMContentLoaded', () => {
+            const nodeWorkflowTab = document.querySelector('.tab-button[data-tab="node-workflow-tab"]');
+            const nodeWorkflowBtn = document.getElementById('node-workflow-btn');
+            
+            // Initialize workflow when clicking sidebar button
+            nodeWorkflowBtn.addEventListener('click', () => {
+                // First switch to the node workflow tab
+                document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                const workflowTab = document.querySelector('.tab-button[data-tab="node-workflow-tab"]');
+                workflowTab.classList.add('active');
+                
+                const workflowContent = document.getElementById('node-workflow-tab');
+                workflowContent.classList.add('active');
+                
+                // Then initialize the node workflow
+                initNodeWorkflow();
+            });
+            
+            // Initialize workflow when clicking tab button
+            nodeWorkflowTab.addEventListener('click', () => {
+                initNodeWorkflow();
+            });
+        });
+    </script>
 </body>
 </html>

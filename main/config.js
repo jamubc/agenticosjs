@@ -21,7 +21,8 @@ const Config = {
     autoReadResponses: false,
     speechRate: 1,
     speechVoice: '',
-    speechRecognitionLang: 'en-US'
+    speechRecognitionLang: 'en-US',
+    chatPersistence: 'persistent' // Added: 'persistent' or 'session-only'
   },
   
   // Storage keys
