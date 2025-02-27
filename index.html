@@ -506,11 +506,20 @@
             modal.style.display = 'none';
           });
           
+          // Also ensure any stuck regular modals are hidden
+          document.querySelectorAll('.modal').forEach(modal => {
+            modal.classList.remove('visible');
+          });
+          
           // Function to show a specific modal
           window.showModal = function(modalId) {
             const modal = document.getElementById(modalId);
             if (modal) {
-              modal.style.display = 'block';
+              if (modal.classList.contains('modal')) {
+                modal.classList.add('visible');
+              } else {
+                modal.style.display = 'block';
+              }
             }
           };
           
@@ -518,7 +527,16 @@
           window.hideModal = function(modalId) {
             const modal = document.getElementById(modalId);
             if (modal) {
-              modal.style.display = 'none';
+              if (modal.classList.contains('modal')) {
+                modal.classList.remove('visible');
+                
+                // Special case for camera modal
+                if (modalId === 'camera-modal' && typeof UI !== 'undefined' && UI.stopCamera) {
+                  UI.stopCamera();
+                }
+              } else {
+                modal.style.display = 'none';
+              }
             }
           };
           
@@ -566,6 +584,20 @@
               }
             });
           });
+          
+          // Special handling for camera modal close button
+          const cameraModalCloseBtn = document.querySelector('#camera-modal .close-modal-btn');
+          if (cameraModalCloseBtn) {
+            cameraModalCloseBtn.addEventListener('click', function() {
+              const modal = document.getElementById('camera-modal');
+              if (modal) {
+                modal.classList.remove('visible');
+                if (typeof UI !== 'undefined' && UI.stopCamera) {
+                  UI.stopCamera();
+                }
+              }
+            });
+          }
         });
         
         // Helper functions for modals

@@ -680,7 +680,12 @@ const UI = {
           return;
       }
       
-      modal.classList.add('visible');
+      // Check if it's a normal modal or a modal-container
+      if (modal.classList.contains('modal-container')) {
+          modal.style.display = 'block';
+      } else {
+          modal.classList.add('visible');
+      }
   },
   
   /**
@@ -694,7 +699,12 @@ const UI = {
           return;
       }
       
-      modal.classList.remove('visible');
+      // Check if it's a normal modal or a modal-container
+      if (modal.classList.contains('modal-container')) {
+          modal.style.display = 'none';
+      } else {
+          modal.classList.remove('visible');
+      }
       
       // Stop camera if camera modal is closed
       if (modalId === 'camera-modal') {
@@ -1075,6 +1085,17 @@ const UI = {
       if (!cameraContainer || !cameraPreview || !previewContainer) {
           console.warn('Camera elements not found');
           return;
+      }
+      
+      // Ensure the close button works properly
+      const closeButton = document.querySelector('#camera-modal .close-modal-btn');
+      if (closeButton) {
+          // Remove existing event listeners to avoid duplicates
+          closeButton.replaceWith(closeButton.cloneNode(true));
+          // Add a fresh event listener
+          document.querySelector('#camera-modal .close-modal-btn').addEventListener('click', () => {
+              this.hideModal('camera-modal');
+          });
       }
       
       try {
