@@ -11,15 +11,15 @@
     --info-color: #3b82f6;
     
     /* Background Colors */
-    --bg-primary: #ffffff;
-    --bg-secondary: #f8fafc;
-    --bg-tertiary: #f1f5f9;
-    --bg-accent: #e2e8f0;
+    --bg-primary: #000000;
+    --bg-secondary: #000000;
+    --bg-tertiary: #000000;
+    --bg-accent: #000000;
     
     /* Text Colors */
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-    --text-tertiary: #94a3b8;
+    --text-primary: #ffffff;
+    --text-secondary: #006aff;
+    --text-tertiary: #ff0000;
     --text-on-primary: #ffffff;
     
     /* Border Colors */
@@ -54,16 +54,16 @@
 
 /* Dark Theme */
 .theme-dark {
-    --primary-color: #3b82f6;
-    --primary-hover: #60a5fa;
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-tertiary: #334155;
-    --bg-accent: #475569;
-    --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
-    --text-tertiary: #94a3b8;
-    --border-color: #334155;
+    --primary-color: #3b82f6;      /* Blue for primary actions */
+    --primary-hover: #60a5fa;      /* Lighter blue on hover */
+    --bg-primary: #0f172a;         /* Dark slate for main background */
+    --bg-secondary: #1e293b;       /* Slightly lighter slate for secondary areas */
+    --bg-tertiary: #334155;        /* Medium gray for tertiary backgrounds */
+    --bg-accent: #475569;          /* Lighter gray for accents */
+    --text-primary: #f8fafc;       /* Near-white for primary text */
+    --text-secondary: #cbd5e1;     /* Light gray for secondary text */
+    --text-tertiary: #94a3b8;      /* Medium gray for tertiary text */
+    --border-color: #334155;       /* Dark gray for borders */
 }
 
 /* High Contrast Theme */

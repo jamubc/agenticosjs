@@ -632,8 +632,8 @@ const Models = {
      * @param {Array} messages - Messages to send
      * @returns {Promise<string>} AI response
      */
-    async sendRequest: function(messages) {
-      if (!this.currentModel || !this.currentProvider) {
+    sendRequest: async function(messages) {
+      if (!this.currentModel || !this.currentProvider) {s
         throw new Error('No model selected');
       }
       
