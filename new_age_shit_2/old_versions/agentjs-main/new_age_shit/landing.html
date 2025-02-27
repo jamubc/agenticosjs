@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Tool</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Indie_Flower&family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.3/codemirror.min.css">
+</head>
+<body>
+    <div id="app-container">
+        <div id="sidebar">
+            <div id="sidebar-content">
+                <div id="header">
+                    <img
+                        href="/"
+                        class="logo"
+                        id="logo_image"
+                        src="https://i.seadn.io/gae/raXOujAwFBBlg3QiaaJzRw_MhtJzjmJBUcxWXclwgJoD223JZ_mPvyEj1_Lt4lq22H9dDsvvpltB_axe_I8ighPRLDG2UNyXQJkyrzA?auto=format&dpr=1&w=1000"
+                        alt="logo"
+                    >
+                    <button id="new-chat-button" class="sidebar-button">New chat</button>
+                    <button id="settings-button" class="sidebar-button"><i class="fas fa-cog"></i> Settings</button>
+                </div>
+                <div id="chat-history">
+                    <h3>Chat History</h3>
+                    <div id="chat-history-list"></div>
+                </div>
+                <div class="item">NODE AGENTS</div>
+            </div>
+            <div id="sidebar-minimized">
+                <button id="chat-history-button" title="Chat History">
+                    <i class="fas fa-history"></i>
+                </button>
+            </div>
+        </div>
+        <button id="toggle-sidebar"><i class="fas fa-chevron-right"></i></button>
+        <div id="main-content">
+            <div id="message-area">
+            </div>
+            <div id="input-area">
+                <div id="image-preview" style="margin-bottom: 10px; display: none;"></div>
+                <select id="ai-selector"></select>
+                <input type="text" id="input-field" placeholder="Ask anything...">
+                <div id="input-buttons" class="input-buttons-container">
+                    <label class="custom-button camera-button" title="Use camera">
+                        <i class="fas fa-camera"></i>
+                        <span class="sr-only">Use camera</span>
+                    </label>
+                    <label for="file-upload" class="custom-button file-button" title="Upload file">
+                        <i class="fas fa-upload"></i>
+                        <span class="sr-only">Upload file</span>
+                    </label>
+                    <input id="file-upload" type="file" accept="image/*" multiple style="display: none;">
+                </div>
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+        <div id="api-settings-modal">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0; color: #aaffaa;">Settings</h2>
+                    <button id="close-modal" style="background: none; border: none; color: #aaffaa; cursor: pointer; font-size: 20px;">×</button>
+                </div>
+                <div style="display: flex; margin-bottom: 20px; border-bottom: 1px solid #3a4a3a;">
+                    <button class="settings-tab active" data-tab="integrations">Integrations</button>
+                    <button class="settings-tab" data-tab="privacy">Privacy</button>
+                    <button class="settings-tab" data-tab="account">Account</button>
+                </div>
+                <div id="integrations-settings-tab" class="settings-content" style="display: block;">
+                    <div style="margin-bottom: 20px;">
+                        <h3>Active Integrations</h3>
+                        <div id="active-integrations" style="margin-bottom: 20px;"></div>
+                        <h3>Add New Integration</h3>
+                        <div style="background-color: #3a4a3a; padding: 15px; border-radius: 8px;">
+                            <div style="margin-bottom: 15px;">
+                                <label for="integration-name" style="display: block; margin-bottom: 5px; color: #aaffaa;">
+                                    Integration Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="integration-name"
+                                    style="width: 100%; padding: 8px; background-color: #2a3a2a; color: #aaffaa; border: 1px solid #4a5a4a; border-radius: 4px;"
+                                    placeholder="e.g., My OpenAI Integration"
+                                >
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <label for="integration-type" style="display: block; margin-bottom: 5px; color: #aaffaa;">
+                                    Integration Type
+                                </label>
+                                <select
+                                    id="integration-type"
+                                    style="width: 100%; padding: 8px; background-color: #2a3a2a; color: #aaffaa; border: 1px solid #4a5a4a; border-radius: 4px;"
+                                >
+                                    <option value="">Select type...</option>
+                                    <option value="openai">OpenAI</option>
+                                    <option value="anthropic">Anthropic</option>
+                                    <option value="custom">Custom Provider</option>
+                                </select>
+                            </div>
+                            <div id="integration-fields" style="margin-bottom: 15px;"></div>
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: flex; align-items: center; color: #aaffaa;">
+                                    <input type="checkbox" id="integration-rotate-keys" style="margin-right: 10px;">
+                                    Enable key rotation (Recommended)
+                                </label>
+                                <p style="font-size: 0.9em; color: #88aa88; margin-top: 5px;">
+                                    Generates a new secure key for each API request
+                                </p>
+                            </div>
+                            <button
+                                id="add-integration"
+                                style="width: 100%; padding: 10px; background-color: #00ff00; color: white; border: none; border-radius: 4px; cursor: pointer;"
+                            >
+                                Add Integration
+                            </button>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <h3>Security Information</h3>
+                        <div style="background-color: #3a4a3a; padding: 15px; border-radius: 8px;">
+                            <p style="color: #aaffaa; margin: 0 0 10px 0;">✓ All API keys are encrypted before storage</p>
+                            <p style="color: #aaffaa; margin: 0 0 10px 0;">✓ Keys are never exposed in the browser</p>
+                            <p style="color: #aaffaa; margin: 0 0 10px 0;">✓ Optional key rotation for enhanced security</p>
+                            <p style="color: #aaffaa; margin: 0;">✓ Secure server-side key management</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="privacy-settings-tab" class="settings-content">
+                    <div style="color: #aaffaa; margin-bottom: 20px;">
+                        <h3>Privacy Commitment</h3>
+                        <p>Your privacy is our top priority. This application is designed with a "privacy-first" approach:</p>
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li style="margin-bottom: 10px;">✓ All API keys and credentials are stored locally in your browser</li>
+                            <li style="margin-bottom: 10px;">✓ No data is sent to our servers without your explicit consent</li>
+                            <li style="margin-bottom: 10px;">✓ Direct API connections between your browser and AI providers</li>
+                            <li style="margin-bottom: 10px;">✓ Open-source code for full transparency</li>
+                        </ul>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3>Privacy Settings</h3>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: flex; align-items: center; color: #aaffaa;">
+                                <input type="checkbox" id="local-storage-only" style="margin-right: 10px;">
+                                Store all data locally only (recommended)
+                            </label>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: flex; align-items: center; color: #aaffaa;">
+                                <input type="checkbox" id="clear-on-exit" style="margin-right: 10px;">
+                                Clear chat history on exit
+                            </label>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: flex; align-items: center; color: #aaffaa;">
+                                <input type="checkbox" id="disable-analytics" style="margin-right: 10px;">
+                                Disable all analytics and tracking
+                            </label>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3>Data Management</h3>
+                        <button
+                            id="clear-all-data"
+                            style="padding: 10px; background-color: #ff4444; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;"
+                        >
+                            Clear All Local Data
+                        </button>
+                        <button
+                            id="export-data"
+                            style="padding: 10px; background-color: #3a4a3a; color: #aaffaa; border: none; border-radius: 4px; cursor: pointer;"
+                        >
+                            Export My Data
+                        </button>
+                    </div>
+                </div>
+                <div id="account-settings-tab" class="settings-content">
+                    <div style="text-align: center; padding: 20px; color: #aaffaa;">
+                        <i class="fas fa-user-circle" style="font-size: 48px; margin-bottom: 20px;"></i>
+                        <p>Account functionality coming soon!</p>
+                        <p style="font-size: 0.9em; color: #88aa88;">Future features will include:</p>
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li>Secure account creation and management</li>
+                            <li>Optional cloud sync for settings</li>
+                            <li>Team collaboration features</li>
+                            <li>Enhanced security options</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; border-top: 1px solid #3a4a3a; padding-top: 20px;">
+                    <button
+                        id="save-api-settings"
+                        style="width: 100%; padding: 10px; background-color: #00ff00; color: white; border: none; border-radius: 4px; cursor: pointer;"
+                    >
+                        Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="custom-alert-modal" style="display: none;">
+            <div class="alert-modal-content">
+                <p id="alert-message"></p>
+                <div id="alert-buttons">
+                </div>
+            </div>
+        </div>
+        <div id="integration-details-modal" style="display: none;">
+            <div class="modal-content">
+                <h3>Integration Details</h3>
+                <div id="integration-editor"></div>
+                <div style="margin-top: 10px;">
+                    <button id="save-integration-changes">Save Changes</button>
+                    <button id="close-integration-modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.3/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.62.3/mode/javascript/javascript.min.js"></script>
+    <script src="script.js"></script>
+    <script src="chat.js"></script>
+</body>
+</html>
