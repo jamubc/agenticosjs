@@ -39,110 +39,143 @@ const UI = {
     },
     
     /**
-     * Initialize UI components and event listeners
-     */
-    init: function() {
-      this.setupEventListeners();
-      this.updateButtonStates();
-      this.setupResizableTextarea();
-      this.setupModals();
-      this.applyTheme(Storage.getSettings().theme || 'default');
-      this.applyFontSize(Storage.getSettings().fontSize || 16);
-      
-      // Set initial state
-      if (window.innerWidth < 768) {
-        this.toggleSidebar(true);
-      }
-    },
+ * Initialize UI components and event listeners
+ */
+init: function() {
+  // Ensure DOM is fully loaded before accessing elements
+  document.addEventListener('DOMContentLoaded', () => {
+    this.setupEventListeners();
+    this.updateButtonStates();
+    this.setupResizableTextarea();
+    this.setupModals();
     
-    /**
-     * Setup all event listeners for UI elements
-     */
-    setupEventListeners: function() {
-      // Sidebar toggle
-      this.elements.sidebarToggle.addEventListener('click', () => {
-        this.toggleSidebar();
-      });
-      
-      // Message input events
-      this.elements.messageInput.addEventListener('input', this.handleInputChange.bind(this));
-      this.elements.messageInput.addEventListener('keydown', (e) => {
-        // Send on Enter (but not with Shift key)
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          this.handleSendMessage();
-        }
-      });
-      
-      // Send button
-      this.elements.sendButton.addEventListener('click', this.handleSendMessage.bind(this));
-      
-      // Voice input button
-      this.elements.voiceInputButton.addEventListener('click', () => {
-        this.showModal('voice-modal');
-        Speech.startSpeechRecognition();
-      });
-      
-      // File upload
-      this.elements.uploadButton.addEventListener('click', () => {
-        this.elements.fileUpload.click();
-      });
-      
-      this.elements.fileUpload.addEventListener('change', (e) => {
-        this.handleFileUpload(e.target.files);
-      });
-      
-      // Camera button
-      this.elements.cameraButton.addEventListener('click', () => {
-        this.showModal('camera-modal');
-        this.initializeCamera();
-      });
-      
-      // New chat button
-      this.elements.newChatButton.addEventListener('click', () => {
-        Chat.startNewChat();
-      });
-      
-      // Settings button
-      this.elements.settingsButton.addEventListener('click', () => {
-        this.showModal('settings-modal');
-        Settings.loadSettings();
-      });
-      
-      // Theme buttons
-      this.elements.lightThemeButton.addEventListener('click', () => {
-        this.applyTheme('light');
-        Storage.updateSettings({ theme: 'light' });
-      });
-      
-      this.elements.darkThemeButton.addEventListener('click', () => {
-        this.applyTheme('dark');
-        Storage.updateSettings({ theme: 'dark' });
-      });
-      
-      // Model selector
-      this.elements.modelSelector.addEventListener('change', (e) => {
-        const modelId = e.target.value;
-        Models.selectModel(modelId);
-      });
-      
-      // Quick prompt buttons
-      document.querySelectorAll('.prompt-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          this.elements.messageInput.value = e.target.textContent;
-          this.handleInputChange();
-          this.elements.messageInput.focus();
-        });
-      });
-      
-      // Window resize handling
-      window.addEventListener('resize', Utils.debounce(() => {
-        // Auto collapse sidebar on small screens
-        if (window.innerWidth < 768 && !this.state.isSidebarCollapsed) {
-          this.toggleSidebar(true);
-        }
-      }, 250));
-    },
+    // Apply theme from storage or default to Pepe theme
+    const storedTheme = Storage.getSettings().theme || 'default';
+    this.applyTheme(storedTheme);
+    this.applyFontSize(Storage.getSettings().fontSize || 16);
+    
+    // Set initial state
+    if (window.innerWidth < 768) {
+      this.toggleSidebar(true);
+    }
+    
+    console.log('UI initialized successfully');
+  });
+},
+
+/**
+ * Setup all event listeners for UI elements
+ */
+setupEventListeners: function() {
+  // Sidebar toggle
+  if (this.elements.sidebarToggle) {
+    this.elements.sidebarToggle.addEventListener('click', () => {
+      this.toggleSidebar();
+    });
+  }
+  
+  // Message input events
+  if (this.elements.messageInput) {
+    this.elements.messageInput.addEventListener('input', this.handleInputChange.bind(this));
+    this.elements.messageInput.addEventListener('keydown', (e) => {
+      // Send on Enter (but not with Shift key)
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        this.handleSendMessage();
+      }
+    });
+  }
+  
+  // Send button
+  if (this.elements.sendButton) {
+    this.elements.sendButton.addEventListener('click', this.handleSendMessage.bind(this));
+  }
+  
+  // Voice input button
+  if (this.elements.voiceInputButton) {
+    this.elements.voiceInputButton.addEventListener('click', () => {
+      this.showModal('voice-modal');
+      Speech.startSpeechRecognition();
+    });
+  }
+  
+  // File upload
+  if (this.elements.uploadButton && this.elements.fileUpload) {
+    this.elements.uploadButton.addEventListener('click', () => {
+      this.elements.fileUpload.click();
+    });
+    
+    this.elements.fileUpload.addEventListener('change', (e) => {
+      this.handleFileUpload(e.target.files);
+    });
+  }
+  
+  // Camera button
+  if (this.elements.cameraButton) {
+    this.elements.cameraButton.addEventListener('click', () => {
+      this.showModal('camera-modal');
+      this.initializeCamera();
+    });
+  }
+  
+  // New chat button
+  if (this.elements.newChatButton) {
+    this.elements.newChatButton.addEventListener('click', () => {
+      Chat.startNewChat();
+    });
+  }
+  
+  // Settings button
+  if (this.elements.settingsButton) {
+    this.elements.settingsButton.addEventListener('click', () => {
+      this.showModal('settings-modal');
+      Settings.loadSettings();
+    });
+  }
+  
+  // Theme buttons - with extra checks to avoid null references
+  if (this.elements.lightThemeButton) {
+    this.elements.lightThemeButton.addEventListener('click', () => {
+      this.applyTheme('light');
+      Storage.updateSettings({ theme: 'light' });
+    });
+  }
+  
+  if (this.elements.darkThemeButton) {
+    this.elements.darkThemeButton.addEventListener('click', () => {
+      console.log('Dark theme button clicked');
+      this.applyTheme('dark');
+      Storage.updateSettings({ theme: 'dark' });
+    });
+  }
+  
+  // Model selector
+  if (this.elements.modelSelector) {
+    this.elements.modelSelector.addEventListener('change', (e) => {
+      const modelId = e.target.value;
+      Models.selectModel(modelId);
+    });
+  }
+  
+  // Quick prompt buttons
+  document.querySelectorAll('.prompt-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      if (this.elements.messageInput) {
+        this.elements.messageInput.value = e.target.textContent;
+        this.handleInputChange();
+        this.elements.messageInput.focus();
+      }
+    });
+  });
+  
+  // Window resize handling
+  window.addEventListener('resize', Utils.debounce(() => {
+    // Auto collapse sidebar on small screens
+    if (window.innerWidth < 768 && !this.state.isSidebarCollapsed) {
+      this.toggleSidebar(true);
+    }
+  }, 250));
+},
     
     /**
      * Setup modals and their event handlers

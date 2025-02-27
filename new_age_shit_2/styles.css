@@ -1,8 +1,8 @@
-/* Base Variables - Default Theme */
+/* Base Variables - Pepe Theme (Light) */
 :root {
     /* Colors */
-    --primary-color: #2563eb;
-    --primary-hover: #1d4ed8;
+    --primary-color: #44b549;    /* Pepe green */
+    --primary-hover: #3a9f3e;    /* Slightly darker green */
     --secondary-color: #64748b;
     --secondary-hover: #475569;
     --success-color: #10b981;
@@ -11,22 +11,22 @@
     --info-color: #3b82f6;
     
     /* Background Colors */
-    --bg-primary: #000000;
-    --bg-secondary: #000000;
-    --bg-tertiary: #000000;
-    --bg-accent: #000000;
+    --bg-primary: #f0fff0;       /* Very light green tint */
+    --bg-secondary: #e6f7e6;     /* Light green tint */
+    --bg-tertiary: #d9f2d9;      /* Subtle green tint */
+    --bg-accent: #c5e8c5;        /* Noticeable green tint */
     
     /* Text Colors */
-    --text-primary: #ffffff;
-    --text-secondary: #006aff;
-    --text-tertiary: #ff0000;
+    --text-primary: #1a3a1a;     /* Dark green-gray for readability */
+    --text-secondary: #2d5a2d;   /* Medium green-gray */
+    --text-tertiary: #3d703d;    /* Light green-gray */
     --text-on-primary: #ffffff;
     
     /* Border Colors */
-    --border-color: #e2e8f0;
-    --border-focus: #3b82f6;
+    --border-color: #bce3bc;
+    --border-focus: #44b549;
     
-    /* UI Elements */
+    /* UI Elements - keeping the same */
     --sidebar-width: 280px;
     --sidebar-collapsed-width: 72px;
     --header-height: 64px;
@@ -52,37 +52,23 @@
     --line-height: 1.5;
 }
 
-/* Dark Theme */
+/* Dark Pepe Theme */
 .theme-dark {
-    --primary-color: #3b82f6;      /* Blue for primary actions */
-    --primary-hover: #60a5fa;      /* Lighter blue on hover */
-    --bg-primary: #0f172a;         /* Dark slate for main background */
-    --bg-secondary: #1e293b;       /* Slightly lighter slate for secondary areas */
-    --bg-tertiary: #334155;        /* Medium gray for tertiary backgrounds */
-    --bg-accent: #475569;          /* Lighter gray for accents */
-    --text-primary: #f8fafc;       /* Near-white for primary text */
-    --text-secondary: #cbd5e1;     /* Light gray for secondary text */
-    --text-tertiary: #94a3b8;      /* Medium gray for tertiary text */
-    --border-color: #334155;       /* Dark gray for borders */
+    --primary-color: #44b549;       /* Keep Pepe green as accent */
+    --primary-hover: #56c95c;       /* Brighter green on hover for contrast */
+    --bg-primary: #0a0a0a;          /* Near black for main background */
+    --bg-secondary: #121212;        /* Very dark gray for secondary areas */
+    --bg-tertiary: #1e1e1e;         /* Dark gray for tertiary backgrounds */
+    --bg-accent: #2a2a2a;           /* Medium-dark gray for accents */
+    --text-primary: #f0fff0;        /* Very light green tint for main text */
+    --text-secondary: #c5e8c5;      /* Light green for secondary text */
+    --text-tertiary: #8bc98b;       /* Muted green for tertiary text */
+    --border-color: #333333;        /* Dark gray for borders */
+    --border-focus: #44b549;        /* Pepe green for focus states */
+    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);  /* Darker shadow for dark mode */
 }
 
-/* High Contrast Theme */
-.theme-contrast {
-    --primary-color: #fff000;
-    --primary-hover: #ffff33;
-    --bg-primary: #000000;
-    --bg-secondary: #121212;
-    --bg-tertiary: #242424;
-    --bg-accent: #363636;
-    --text-primary: #ffffff;
-    --text-secondary: #eeeeee;
-    --text-tertiary: #cccccc;
-    --text-on-primary: #000000;
-    --border-color: #ffffff;
-    --box-shadow: 0 0 0 2px #ffffff;
-}
-
-/* Light Theme */
+/* Light Theme (keeping for option) */
 .theme-light {
     --primary-color: #0284c7;
     --primary-hover: #0369a1;
@@ -1571,4 +1557,213 @@ a {
     .message-container {
         overflow: visible;
     }
+}
+
+/* Navigation Tabs */
+.nav-tabs {
+    display: flex;
+    margin-left: auto;
+    gap: 4px;
+}
+
+.nav-tab {
+    padding: 8px 16px;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-tab i {
+    font-size: var(--font-size-sm);
+}
+
+.nav-tab:hover {
+    background-color: var(--bg-accent);
+    color: var(--text-primary);
+}
+
+.nav-tab.active {
+    background-color: var(--primary-color);
+    color: var(--text-on-primary);
+}
+
+/* Node Editor Specific Styles */
+.node-editor-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: radial-gradient(circle, var(--bg-secondary) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.node {
+    position: absolute;
+    min-width: 200px;
+    border-radius: var(--border-radius);
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow);
+    color: var(--text-primary);
+    padding: 0;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.node-header {
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: var(--text-on-primary);
+    font-weight: var(--font-weight-semibold);
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+    cursor: move;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.node-content {
+    padding: 10px;
+}
+
+.node-input, .node-output {
+    height: 15px;
+    width: 15px;
+    background-color: var(--bg-accent);
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    position: absolute;
+    cursor: pointer;
+    z-index: 2;
+    transition: all 0.2s ease;
+}
+
+.node-input:hover, .node-output:hover {
+    transform: scale(1.2);
+    border-color: var(--primary-color);
+}
+
+.node-input {
+    top: 50%;
+    left: -10px;
+}
+
+.node-output {
+    top: 50%;
+    right: -10px;
+}
+
+.connection-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.connection-line {
+    stroke: var(--primary-color);
+    stroke-width: 2;
+    fill: none;
+    animation: connection-pulse 2s infinite;
+}
+
+@keyframes connection-pulse {
+    0%, 100% {
+        stroke-opacity: 0.7;
+    }
+    50% {
+        stroke-opacity: 1;
+    }
+}
+
+.node-toolbar {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+    display: flex;
+    gap: 8px;
+}
+
+.node-toolbar button {
+    padding: 8px 12px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.node-toolbar button:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.node-toolbar button i {
+    font-size: var(--font-size-sm);
+}
+
+/* Node Form Elements */
+.node-form-group {
+    margin-bottom: 10px;
+}
+
+.node-form-group label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+}
+
+.node-form-group input,
+.node-form-group textarea,
+.node-form-group select {
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+}
+
+.node-form-group input:focus,
+.node-form-group textarea:focus,
+.node-form-group select:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+/* Preview image in the app background */
+.pepe-bg-logo {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 100px;
+    height: 100px;
+    opacity: 0.05;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Theme preview updates */
+.theme-preview.default-theme {
+    background: linear-gradient(to right, #44b549 30%, #f0fff0 30% 100%);
+}
+
+.theme-preview.dark-theme {
+    background: linear-gradient(to right, #44b549 30%, #0a0a0a 30% 100%);
 }

@@ -395,226 +395,244 @@ const Models = {
     },
     
     /**
-     * Get API endpoint for current model
-     * @returns {string} API endpoint
-     */
-    getCurrentModelEndpoint: function() {
-      if (!this.currentModel || !this.currentProvider) return null;
-      
-      // Use appropriate endpoint based on provider type
-      switch (this.currentModel.providerType) {
-        case 'openai':
-          return 'https://api.openai.com/v1/chat/completions';
-        case 'anthropic':
-          return 'https://api.anthropic.com/v1/messages';
-        case 'gemini':
-          return `https://generativelanguage.googleapis.com/v1beta/models/${this.currentModel.modelId}:generateContent`;
-        case 'mistral':
-          return 'https://api.mistral.ai/v1/chat/completions';
-        case 'azure_openai':
-          return `${this.currentProvider.endpoint}/openai/deployments/${this.currentProvider.deployment}/chat/completions?api-version=2023-05-15`;
-        case 'custom':
-          return this.currentProvider.api_endpoint;
-        default:
-          return null;
-      }
-    },
+ * Get API endpoint for current model
+ * @returns {string} API endpoint
+ */
+getCurrentModelEndpoint: function() {
+  if (!this.currentModel || !this.currentProvider) return null;
+  
+  // Use appropriate endpoint based on provider type
+  switch (this.currentModel.providerType) {
+    case 'openai':
+      return 'https://api.openai.com/v1/chat/completions';
+    case 'anthropic':
+      return 'https://api.anthropic.com/v1/messages';
+    case 'groq':
+      return 'https://api.groq.com/openai/v1/chat/completions';
+    case 'gemini':
+      return `https://generativelanguage.googleapis.com/v1beta/models/${this.currentModel.modelId}:generateContent`;
+    case 'mistral':
+      return 'https://api.mistral.ai/v1/chat/completions';
+    case 'azure_openai':
+      return `${this.currentProvider.endpoint}/openai/deployments/${this.currentProvider.deployment}/chat/completions?api-version=2023-05-15`;
+    case 'custom':
+      return this.currentProvider.api_endpoint;
+    default:
+      return null;
+  }
+},
+
+/**
+ * Get API headers for current model
+ * @returns {Object} Headers object
+ */
+getCurrentModelHeaders: function() {
+  if (!this.currentModel || !this.currentProvider) return {};
+  
+  // Use appropriate headers based on provider type
+  switch (this.currentModel.providerType) {
+    case 'openai':
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.currentProvider.api_key}`,
+        'OpenAI-Organization': this.currentProvider.organization || ''
+      };
+    case 'anthropic':
+      return {
+        'Content-Type': 'application/json',
+        'x-api-key': this.currentProvider.api_key,
+        'anthropic-version': '2023-06-01'
+      };
+    case 'groq':
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.currentProvider.api_key}`
+      };
+    case 'gemini':
+      return {
+        'Content-Type': 'application/json'
+      };
+    case 'mistral':
+      return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.currentProvider.api_key}`
+      };
+    case 'azure_openai':
+      return {
+        'Content-Type': 'application/json',
+        'api-key': this.currentProvider.api_key
+      };
+    case 'custom':
+      return {
+        'Content-Type': 'application/json',
+        [this.currentProvider.auth_header]: this.currentProvider.api_key
+      };
+    default:
+      return {
+        'Content-Type': 'application/json'
+      };
+  }
+},
+
+/**
+ * Format messages for API request
+ * @param {Array} messages - Array of message objects
+ * @returns {Array} Formatted messages
+ */
+formatMessagesForAPI: function(messages) {
+  if (!this.currentModel || !this.currentProvider) return [];
+  
+  // Format messages based on provider type
+  switch (this.currentModel.providerType) {
+    case 'openai':
+    case 'azure_openai':
+    case 'mistral':
+    case 'groq':  // Groq uses OpenAI-compatible format
+      // OpenAI format (also used by Mistral, Azure, and Groq)
+      return messages.map(msg => ({
+        role: msg.role === 'assistant' ? 'assistant' : (msg.role === 'system' ? 'system' : 'user'),
+        content: msg.content
+      }));
     
-    /**
-     * Get API headers for current model
-     * @returns {Object} Headers object
-     */
-    getCurrentModelHeaders: function() {
-      if (!this.currentModel || !this.currentProvider) return {};
-      
-      // Use appropriate headers based on provider type
-      switch (this.currentModel.providerType) {
-        case 'openai':
-          return {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.currentProvider.api_key}`,
-            'OpenAI-Organization': this.currentProvider.organization || ''
-          };
-        case 'anthropic':
-          return {
-            'Content-Type': 'application/json',
-            'x-api-key': this.currentProvider.api_key,
-            'anthropic-version': '2023-06-01'
-          };
-        case 'gemini':
-          return {
-            'Content-Type': 'application/json'
-          };
-        case 'mistral':
-          return {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.currentProvider.api_key}`
-          };
-        case 'azure_openai':
-          return {
-            'Content-Type': 'application/json',
-            'api-key': this.currentProvider.api_key
-          };
-        case 'custom':
-          return {
-            'Content-Type': 'application/json',
-            [this.currentProvider.auth_header]: this.currentProvider.api_key
-          };
-        default:
-          return {
-            'Content-Type': 'application/json'
-          };
-      }
-    },
+    case 'anthropic':
+      // Anthropic format
+      return messages.map(msg => ({
+        role: msg.role === 'assistant' ? 'assistant' : 'user',
+        content: msg.role === 'system' ? `<system>${msg.content}</system>` : msg.content
+      }));
     
-    /**
-     * Format messages for API request
-     * @param {Array} messages - Array of message objects
-     * @returns {Array} Formatted messages
-     */
-    formatMessagesForAPI: function(messages) {
-      if (!this.currentModel || !this.currentProvider) return [];
-      
-      // Format messages based on provider type
-      switch (this.currentModel.providerType) {
-        case 'openai':
-        case 'azure_openai':
-        case 'mistral':
-          // OpenAI format (also used by Mistral and Azure)
-          return messages.map(msg => ({
-            role: msg.role === 'assistant' ? 'assistant' : (msg.role === 'system' ? 'system' : 'user'),
-            content: msg.content
-          }));
-        
-        case 'anthropic':
-          // Anthropic format
-          return messages.map(msg => ({
-            role: msg.role === 'assistant' ? 'assistant' : 'user',
-            content: msg.role === 'system' ? `<system>${msg.content}</system>` : msg.content
-          }));
-        
-        case 'gemini':
-          // Gemini format
-          return messages.map(msg => ({
-            role: msg.role === 'assistant' ? 'model' : 'user',
-            parts: [{ text: msg.content }]
-          }));
-        
-        case 'custom':
-          // Default to OpenAI format for custom providers
-          return messages.map(msg => ({
-            role: msg.role === 'assistant' ? 'assistant' : (msg.role === 'system' ? 'system' : 'user'),
-            content: msg.content
-          }));
-        
-        default:
-          return [];
-      }
-    },
+    case 'gemini':
+      // Gemini format
+      return messages.map(msg => ({
+        role: msg.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: msg.content }]
+      }));
     
-    /**
-     * Format API request body
-     * @param {Array} messages - Array of message objects
-     * @returns {Object} Request body
-     */
-    formatRequestBody: function(messages) {
-      if (!this.currentModel || !this.currentProvider) return {};
-      
-      const formattedMessages = this.formatMessagesForAPI(messages);
-      
-      // Format request body based on provider type
-      switch (this.currentModel.providerType) {
-        case 'openai':
-        case 'azure_openai':
-          return {
-            model: this.currentModel.modelId,
-            messages: formattedMessages,
-            temperature: 0.7,
-            max_tokens: 1000,
-            stream: false
-          };
-        
-        case 'anthropic':
-          return {
-            model: this.currentModel.modelId,
-            messages: formattedMessages,
-            max_tokens: 1000,
-            temperature: 0.7
-          };
-        
-        case 'gemini':
-          return {
-            contents: formattedMessages,
-            generationConfig: {
-              temperature: 0.7,
-              maxOutputTokens: 1000
-            }
-          };
-        
-        case 'mistral':
-          return {
-            model: this.currentModel.modelId,
-            messages: formattedMessages,
-            temperature: 0.7,
-            max_tokens: 1000
-          };
-        
-        case 'custom':
-          // For custom, allow some flexibility in the format
-          return {
-            model: this.currentModel.modelId,
-            messages: formattedMessages,
-            temperature: 0.7,
-            max_tokens: 1000
-          };
-        
-        default:
-          return {};
-      }
-    },
+    case 'custom':
+      // Default to OpenAI format for custom providers
+      return messages.map(msg => ({
+        role: msg.role === 'assistant' ? 'assistant' : (msg.role === 'system' ? 'system' : 'user'),
+        content: msg.content
+      }));
     
-    /**
-     * Parse API response
-     * @param {Object} response - API response object
-     * @returns {string} Response content
-     */
-    parseResponse: function(response) {
-      if (!response) return '';
-      
-      try {
-        switch (this.currentModel.providerType) {
-          case 'openai':
-          case 'azure_openai':
-            return response.choices?.[0]?.message?.content || '';
-          
-          case 'anthropic':
-            return response.content?.[0]?.text || '';
-          
-          case 'gemini':
-            return response.candidates?.[0]?.content?.parts?.[0]?.text || 
-                   response.candidates?.[0]?.output || '';
-          
-          case 'mistral':
-            return response.choices?.[0]?.message?.content || '';
-          
-          case 'custom':
-            // Try different common formats
-            return response.choices?.[0]?.message?.content || 
-                   response.message?.content ||
-                   response.text ||
-                   response.content ||
-                   response.output ||
-                   response.result ||
-                   response.toString();
-          
-          default:
-            return JSON.stringify(response);
+    default:
+      return [];
+  }
+},
+
+/**
+ * Format API request body
+ * @param {Array} messages - Array of message objects
+ * @returns {Object} Request body
+ */
+formatRequestBody: function(messages) {
+  if (!this.currentModel || !this.currentProvider) return {};
+  
+  const formattedMessages = this.formatMessagesForAPI(messages);
+  
+  // Format request body based on provider type
+  switch (this.currentModel.providerType) {
+    case 'openai':
+    case 'azure_openai':
+      return {
+        model: this.currentModel.modelId,
+        messages: formattedMessages,
+        temperature: 0.7,
+        max_tokens: 1000,
+        stream: false
+      };
+    
+    case 'groq':
+      return {
+        model: this.currentModel.modelId,
+        messages: formattedMessages,
+        temperature: 0.7,
+        max_tokens: 1000,
+        stream: false
+      };
+    
+    case 'anthropic':
+      return {
+        model: this.currentModel.modelId,
+        messages: formattedMessages,
+        max_tokens: 1000,
+        temperature: 0.7
+      };
+    
+    case 'gemini':
+      return {
+        contents: formattedMessages,
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 1000
         }
-      } catch (error) {
-        console.error('Error parsing AI response:', error);
-        return 'Error parsing response';
-      }
-    },
+      };
+    
+    case 'mistral':
+      return {
+        model: this.currentModel.modelId,
+        messages: formattedMessages,
+        temperature: 0.7,
+        max_tokens: 1000
+      };
+    
+    case 'custom':
+      // For custom, allow some flexibility in the format
+      return {
+        model: this.currentModel.modelId,
+        messages: formattedMessages,
+        temperature: 0.7,
+        max_tokens: 1000
+      };
+    
+    default:
+      return {};
+  }
+},
+
+/**
+ * Parse API response
+ * @param {Object} response - API response object
+ * @returns {string} Response content
+ */
+parseResponse: function(response) {
+  if (!response) return '';
+  
+  try {
+    switch (this.currentModel.providerType) {
+      case 'openai':
+      case 'azure_openai':
+      case 'groq':  // Groq uses OpenAI-compatible response format
+        return response.choices?.[0]?.message?.content || '';
+      
+      case 'anthropic':
+        return response.content?.[0]?.text || '';
+      
+      case 'gemini':
+        return response.candidates?.[0]?.content?.parts?.[0]?.text || 
+               response.candidates?.[0]?.output || '';
+      
+      case 'mistral':
+        return response.choices?.[0]?.message?.content || '';
+      
+      case 'custom':
+        // Try different common formats
+        return response.choices?.[0]?.message?.content || 
+               response.message?.content ||
+               response.text ||
+               response.content ||
+               response.output ||
+               response.result ||
+               response.toString();
+      
+      default:
+        return JSON.stringify(response);
+    }
+  } catch (error) {
+    console.error('Error parsing AI response:', error);
+    return 'Error parsing response';
+  }
+},
     
     /**
      * Get model API key
