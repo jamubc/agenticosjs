@@ -1,19 +1,30 @@
 {
-  "name": "gitt1",
+  "name": "intelliflow",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "IntelliFlow - AI-powered chat and workflow application",
+  "main": "index.html",
   "scripts": {
+    "start": "npx serve .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jamubc/gitt1.git"
   },
+  "keywords": [
+    "ai",
+    "chat",
+    "node-workflow",
+    "multitool"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/jamubc/gitt1/issues"
   },
   "homepage": "https://github.com/jamubc/gitt1#readme",
-  "description": ""
+  "dependencies": {},
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
 }
