@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+</head>
+<body>
+    <div id="app-container" class="theme-default">
+        <!-- Sidebar -->
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/logo.svg" alt="Logo" class="logo">
+                <h1 class="app-title">AI Assistant</h1>
+                <button id="sidebar-toggle" aria-label="Toggle Sidebar">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-section">
+                <button id="new-chat-btn" class="primary-btn">
+                    <i class="fas fa-plus"></i>
+                    <span>New Chat</span>
+                </button>
+            </div>
+            
+            <div class="sidebar-section">
+                <h2 class="section-title">Recent Chats</h2>
+                <div id="chat-history-list" class="chat-list"></div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h2 class="section-title">Tools</h2>
+                <div class="tools-list">
+                    <button class="tool-btn" data-tool="document-analysis">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Document Analysis</span>
+                    </button>
+                    <button class="tool-btn" data-tool="image-generation">
+                        <i class="fas fa-image"></i>
+                        <span>Image Generation</span>
+                    </button>
+                    <button class="tool-btn" data-tool="code-assistant">
+                        <i class="fas fa-code"></i>
+                        <span>Code Assistant</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <button id="settings-btn" class="icon-btn" aria-label="Settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </button>
+                <div class="theme-toggle">
+                    <button id="light-theme-btn" class="theme-btn active" aria-label="Light Theme">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                    <button id="dark-theme-btn" class="theme-btn" aria-label="Dark Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main id="main-content">
+            <header class="chat-header">
+                <div class="model-selector-container">
+                    <select id="model-selector" class="model-selector">
+                        <option value="" disabled selected>Select AI Model</option>
+                    </select>
+                    <div class="model-info">
+                        <span id="model-badge" class="model-badge">GPT-4</span>
+                        <span id="model-status" class="model-status">Ready</span>
+                    </div>
+                </div>
+            </header>
+
+            <div id="message-container" class="message-container">
+                <div class="welcome-screen">
+                    <img src="assets/welcome-illustration.svg" alt="Welcome" class="welcome-image">
+                    <h2>Welcome to AI Assistant</h2>
+                    <p>Start a conversation with one of the available AI models</p>
+                    <div class="quick-prompts">
+                        <button class="prompt-btn">Write a blog post about AI</button>
+                        <button class="prompt-btn">Help me debug my code</button>
+                        <button class="prompt-btn">Summarize a complex topic</button>
+                        <button class="prompt-btn">Create a content plan</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <div id="input-feedback" class="input-feedback">
+                    <span id="feedback-message"></span>
+                    <button id="clear-feedback" class="clear-btn" aria-label="Clear Feedback">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div id="attachment-preview" class="attachment-preview"></div>
+                
+                <div class="input-wrapper">
+                    <button id="voice-input-btn" class="voice-btn" aria-label="Voice Input">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    
+                    <div class="textarea-container">
+                        <textarea 
+                            id="message-input" 
+                            placeholder="Type your message here... (Shift+Enter for new line)"
+                            rows="1" 
+                            aria-label="Message Input">
+                        </textarea>
+                    </div>
+                    
+                    <div class="input-actions">
+                        <button id="upload-btn" class="action-btn" aria-label="Upload File">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <button id="camera-btn" class="action-btn" aria-label="Take Photo">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                        <button id="send-btn" class="send-btn" disabled aria-label="Send Message">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="input-utils">
+                    <div class="typing-indicator">
+                        <span class="model-name">Model:</span>
+                        <span id="model-typing-status">Idle</span>
+                    </div>
+                    <div class="token-counter">
+                        <span id="token-count">0</span>
+                        <span>tokens</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- File Upload Input (Hidden) -->
+    <input type="file" id="file-upload" multiple accept="image/*,application/pdf,.doc,.docx,.txt,.csv,.xlsx" hidden>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-modal-btn" aria-label="Close Modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-tabs">
+                <button class="tab-btn active" data-tab="ai-integrations">AI Integrations</button>
+                <button class="tab-btn" data-tab="appearance">Appearance</button>
+                <button class="tab-btn" data-tab="privacy">Privacy</button>
+                <button class="tab-btn" data-tab="accessibility">Accessibility</button>
+            </div>
+            
+            <div class="modal-body">
+                <div id="ai-integrations-tab" class="tab-content active">
+                    <h3>Configure AI Providers</h3>
+                    <div id="active-integrations" class="integrations-list"></div>
+                    
+                    <div class="add-integration-form">
+                        <h4>Add New Integration</h4>
+                        <div class="form-group">
+                            <label for="integration-name">Name</label>
+                            <input type="text" id="integration-name" placeholder="My OpenAI Integration">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="integration-type">Provider</label>
+                            <select id="integration-type">
+                                <option value="" selected disabled>Select provider</option>
+                            </select>
+                        </div>
+                        
+                        <div id="integration-fields" class="integration-fields"></div>
+                        
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="integration-rotate-keys">
+                                <span>Enable key rotation (recommended)</span>
+                            </label>
+                            <p class="form-help">Generates a new secure key for each API request</p>
+                        </div>
+                        
+                        <button id="add-integration-btn" class="primary-btn">Add Integration</button>
+                    </div>
+                </div>
+                
+                <div id="appearance-tab" class="tab-content">
+                    <h3>Appearance</h3>
+                    <div class="form-group">
+                        <label>Theme</label>
+                        <div class="theme-options">
+                            <button class="theme-option active" data-theme="default">
+                                <div class="theme-preview default-theme"></div>
+                                <span>Default</span>
+                            </button>
+                            <button class="theme-option" data-theme="dark">
+                                <div class="theme-preview dark-theme"></div>
+                                <span>Dark</span>
+                            </button>
+                            <button class="theme-option" data-theme="light">
+                                <div class="theme-preview light-theme"></div>
+                                <span>Light</span>
+                            </button>
+                            <button class="theme-option" data-theme="contrast">
+                                <div class="theme-preview contrast-theme"></div>
+                                <span>High Contrast</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Font Size</label>
+                        <div class="range-slider">
+                            <input type="range" id="font-size-slider" min="12" max="20" step="1" value="16">
+                            <div class="slider-value"><span id="font-size-value">16</span>px</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="reduce-motion">
+                            <span>Reduce motion</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div id="privacy-tab" class="tab-content">
+                    <h3>Privacy</h3>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="local-storage-only" checked>
+                            <span>Store data locally only (recommended)</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="clear-on-exit">
+                            <span>Clear chat history on exit</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="disable-analytics" checked>
+                            <span>Disable all analytics and tracking</span>
+                        </label>
+                    </div>
+                    
+                    <div class="actions-group">
+                        <button id="export-data-btn" class="secondary-btn">
+                            <i class="fas fa-download"></i>
+                            Export My Data
+                        </button>
+                        <button id="clear-all-data-btn" class="danger-btn">
+                            <i class="fas fa-trash"></i>
+                            Clear All Data
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="accessibility-tab" class="tab-content">
+                    <h3>Accessibility</h3>
+                    <div class="form-group">
+                        <label>Text-to-Speech Voice</label>
+                        <select id="tts-voice-select">
+                            <option value="" selected disabled>Loading voices...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Speech Rate</label>
+                        <div class="range-slider">
+                            <input type="range" id="speech-rate-slider" min="0.5" max="2" step="0.1" value="1">
+                            <div class="slider-value"><span id="speech-rate-value">1</span>x</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="auto-read-responses">
+                            <span>Automatically read AI responses</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Speech Recognition Language</label>
+                        <select id="speech-recognition-language">
+                            <option value="en-US">English (US)</option>
+                            <option value="en-GB">English (UK)</option>
+                            <option value="es-ES">Spanish</option>
+                            <option value="fr-FR">French</option>
+                            <option value="de-DE">German</option>
+                            <option value="zh-CN">Chinese</option>
+                            <option value="ja-JP">Japanese</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="cancel-btn">Cancel</button>
+                <button id="save-settings-btn" class="primary-btn">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Modal -->
+    <div id="camera-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Take Photo</h2>
+                <button class="close-modal-btn" aria-label="Close Modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div id="camera-container">
+                    <video id="camera-preview" autoplay playsinline></video>
+                    <div class="camera-controls">
+                        <button id="camera-switch-btn" class="secondary-btn">
+                            <i class="fas fa-sync-alt"></i>
+                            Switch Camera
+                        </button>
+                        <button id="camera-capture-btn" class="primary-btn">
+                            <i class="fas fa-camera"></i>
+                            Capture
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="camera-preview-container" hidden>
+                    <canvas id="capture-canvas"></canvas>
+                    <div class="capture-controls">
+                        <button id="camera-retake-btn" class="secondary-btn">
+                            <i class="fas fa-redo"></i>
+                            Retake
+                        </button>
+                        <button id="camera-accept-btn" class="primary-btn">
+                            <i class="fas fa-check"></i>
+                            Accept
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voice Recording Modal -->
+    <div id="voice-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Voice Input</h2>
+                <button class="close-modal-btn" aria-label="Close Modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body voice-modal-body">
+                <div class="voice-visualization">
+                    <div class="voice-waves">
+                        <div class="wave"></div>
+                        <div class="wave"></div>
+                        <div class="wave"></div>
+                        <div class="wave"></div>
+                        <div class="wave"></div>
+                    </div>
+                    <div id="voice-status">Listening...</div>
+                </div>
+                
+                <div class="voice-transcript">
+                    <p id="voice-transcript-text">Speak now...</p>
+                </div>
+                
+                <div class="voice-controls">
+                    <button id="voice-stop-btn" class="secondary-btn">
+                        <i class="fas fa-stop"></i>
+                        Stop
+                    </button>
+                    <button id="voice-send-btn" class="primary-btn" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert/Confirm Modal -->
+    <div id="alert-modal" class="modal">
+        <div class="modal-content alert-content">
+            <div class="alert-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <h3 id="alert-title">Alert</h3>
+            <p id="alert-message">This is an alert message.</p>
+            <div class="alert-buttons">
+                <button id="alert-cancel-btn" class="secondary-btn">Cancel</button>
+                <button id="alert-confirm-btn" class="primary-btn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/speech.js"></script>
+    <script src="js/models.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
