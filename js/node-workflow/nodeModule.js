@@ -259,16 +259,128 @@ function resetCanvasTransform() {
 /**
  * Makes the canvas draggable (panning)
  */
+/**
+ * Makes the canvas draggable (panning) - Enhanced version
+ */
 function setupCanvasDrag(canvas) {
+  // Enable dragging with left mouse button directly on canvas background
   canvas.addEventListener('mousedown', (e) => {
-    // Only enable canvas dragging with middle mouse button or when holding Space
-    if (e.button === 1 || e.altKey) {
-      isDraggingCanvas = true;
+    // Skip dragging if we clicked on a node or its parts
+    if (e.target !== canvas && e.target !== document.getElementById('canvas-content')) {
+      return;
+    }
+    
+    // Enable dragging with left mouse button on canvas background
+    isDraggingCanvas = true;
+    lastMousePos = { x: e.clientX, y: e.clientY };
+    canvas.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+  
+  document.addEventListener('mousemove', (e) => {
+    if (isDraggingCanvas) {
+      const deltaX = (e.clientX - lastMousePos.x) / canvasScale;
+      const deltaY = (e.clientY - lastMousePos.y) / canvasScale;
+      
+      canvasOffset.x += deltaX;
+      canvasOffset.y += deltaY;
+      
+      const content = document.getElementById('canvas-content');
+      content.style.transform = `scale(${canvasScale}) translate(${canvasOffset.x}px, ${canvasOffset.y}px)`;
+      
       lastMousePos = { x: e.clientX, y: e.clientY };
-      canvas.style.cursor = 'grabbing';
       e.preventDefault();
     }
   });
+  
+  document.addEventListener('mouseup', () => {
+    if (isDraggingCanvas) {
+      isDraggingCanvas = false;
+      canvas.style.cursor = 'default';
+      updateConnections();
+    }
+  });
+  
+  // Add keyboard shortcut for temporary panning (Space + drag)
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && !e.repeat) {
+      canvas.style.cursor = 'grab';
+      
+      // Store any ongoing operation
+      const wasConnecting = isConnecting;
+      const wasDraggingNode = draggedNode !== null;
+      
+      // Add event listener for mouse down while Space is pressed
+      const spaceMouseDownHandler = (mouseEvent) => {
+        if (e.code === 'Space') {
+          isDraggingCanvas = true;
+          lastMousePos = { x: mouseEvent.clientX, y: mouseEvent.clientY };
+          canvas.style.cursor = 'grabbing';
+          
+          // Prevent normal node dragging/connecting
+          if (wasConnecting) {
+            // Clean up connecting state
+            if (tempConnectionLine && tempConnectionLine.parentNode) {
+              tempConnectionLine.parentNode.removeChild(tempConnectionLine);
+            }
+            tempConnectionLine = null;
+            isConnecting = false;
+          }
+          
+          if (wasDraggingNode) {
+            draggedNode = null;
+          }
+          
+          mouseEvent.preventDefault();
+          mouseEvent.stopPropagation();
+        }
+      };
+      
+      canvas.addEventListener('mousedown', spaceMouseDownHandler);
+      
+      // Remove the event listener when Space is released
+      const spaceUpHandler = () => {
+        canvas.removeEventListener('mousedown', spaceMouseDownHandler);
+        document.removeEventListener('keyup', spaceUpHandler);
+        canvas.style.cursor = 'default';
+      };
+      
+      document.addEventListener('keyup', spaceUpHandler, { once: true });
+    }
+  });
+  
+  // Add visual indicator for draggable canvas
+  const dragIndicator = document.createElement('div');
+  dragIndicator.className = 'drag-indicator';
+  dragIndicator.innerHTML = `
+    <div class="drag-icon">
+      <i class="fas fa-arrows-alt"></i>
+    </div>
+    <div class="drag-text">Click and drag to move canvas</div>
+  `;
+  dragIndicator.style.position = 'absolute';
+  dragIndicator.style.bottom = '80px';
+  dragIndicator.style.left = '20px';
+  dragIndicator.style.padding = '8px 12px';
+  dragIndicator.style.background = 'rgba(0,0,0,0.6)';
+  dragIndicator.style.borderRadius = '4px';
+  dragIndicator.style.color = 'white';
+  dragIndicator.style.display = 'flex';
+  dragIndicator.style.alignItems = 'center';
+  dragIndicator.style.gap = '8px';
+  dragIndicator.style.fontSize = '0.9rem';
+  dragIndicator.style.opacity = '0.7';
+  dragIndicator.style.transition = 'opacity 0.3s';
+  dragIndicator.style.pointerEvents = 'none';
+  dragIndicator.style.zIndex = '50';
+  
+  canvas.appendChild(dragIndicator);
+  
+  // Fade out the indicator after 5 seconds
+  setTimeout(() => {
+    dragIndicator.style.opacity = '0';
+  }, 5000);
+}
   
   document.addEventListener('mousemove', (e) => {
     if (isDraggingCanvas) {
