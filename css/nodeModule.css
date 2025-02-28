@@ -123,9 +123,6 @@
   flex: 1;
   position: relative;
   background-color: var(--bg-primary, #131517);
-  background-image: 
-    radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
-  background-size: 25px 25px;
   overflow: hidden;
   transition: all 0.3s ease;
 }
@@ -137,6 +134,8 @@
   top: 0;
   left: 0;
   transform-origin: 0 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 25px 25px;
 }
 
 /* SVG connections */
@@ -154,17 +153,7 @@
   stroke: var(--accent-color, #3f8cff);
   stroke-width: 2;
   fill: none;
-}
-
-#connections path.flow-path {
-  stroke-dasharray: 5, 5;
-  animation: flowLine 1s linear infinite;
-}
-
-@keyframes flowLine {
-  to {
-    stroke-dashoffset: -10;
-  }
+  pointer-events: all;
 }
 
 /* Node Styling */
@@ -275,6 +264,16 @@
   align-items: center;
 }
 
+.node-resize-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background-color: transparent;
+  cursor: se-resize;
+}
+
 /* Node Connection Points */
 .node-port {
   width: 12px;
@@ -305,8 +304,14 @@
   transform: translateY(-50%);
 }
 
-.node-port.input:hover, .node-port.output:hover {
+.node-port.input:hover,
+.node-port.output:hover {
   transform: translateY(-50%) scale(1.3);
+}
+
+.node-port.compatible-port {
+  background-color: #4fd1c5;
+  box-shadow: 0 0 0 3px rgba(79, 209, 197, 0.5);
 }
 
 /* Form controls within nodes */
@@ -427,7 +432,7 @@
   backdrop-filter: blur(4px);
 }
 
-.zoom-btn {
+.zoom-controls button {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -442,7 +447,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.zoom-btn:hover {
+.zoom-controls button:hover {
   background-color: var(--accent-color, #3f8cff);
   color: white;
 }
@@ -478,123 +483,4 @@
 
 .node[data-type="HTTP_REQUEST"] .node-title {
   color: #4299e1;
-}
-
-/* Mini-map */
-.node-minimap {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 180px;
-  height: 120px;
-  background-color: var(--bg-tertiary, #252a30);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
-  z-index: 100;
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
-}
-
-.node-minimap:hover {
-  opacity: 1;
-}
-
-/* Updated Canvas background - Moving dotted pattern to canvas-content */
-.canvas {
-  flex: 1;
-  position: relative;
-  background-color: var(--bg-primary, #131517);
-  overflow: hidden;
-  transition: all 0.3s ease;
-  background-image: none; /* Ensures the background image is removed from canvas */
-}
-
-#canvas-content {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform-origin: 0 0;
-  background-image: 
-    radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
-  background-size: 25px 25px;
-}
-
-/* Enhanced SVG connections */
-#connections {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-}
-
-#connections path {
-  stroke: var(--accent-color, #3f8cff);
-  stroke-width: 3;
-  fill: none;
-  filter: drop-shadow(0 0 3px rgba(63, 140, 255, 0.4));
-  transition: all 0.3s ease;
-}
-
-#connections path.flow-path {
-  stroke-dasharray: 5, 5;
-  animation: flowLine 1s linear infinite;
-}
-
-#connections path.connection-highlight {
-  stroke-width: 4;
-  stroke: var(--accent-color-light, #5d9fff);
-  filter: drop-shadow(0 0 5px rgba(63, 140, 255, 0.6));
-}
-
-/* Connection endpoint markers */
-.connection-dot {
-  fill: var(--accent-color, #3f8cff);
-  filter: drop-shadow(0 0 3px rgba(63, 140, 255, 0.5));
-}
-
-/* Improve node port visibility */
-.node-port {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background-color: var(--accent-color, #3f8cff);
-  border: 2px solid rgba(0, 0, 0, 0.3);
-  position: absolute;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  z-index: 10;
-  box-shadow: 0 0 0 2px rgba(63, 140, 255, 0.3);
-}
-
-.node-port:hover {
-  transform: scale(1.3);
-  box-shadow: 0 0 0 4px rgba(63, 140, 255, 0.5);
-}
-
-.node-port.input {
-  top: 50%;
-  left: -7px;
-  transform: translateY(-50%);
-}
-
-.node-port.output {
-  top: 50%;
-  right: -7px;
-  transform: translateY(-50%);
-}
-
-.node-port.input:hover, .node-port.output:hover {
-  transform: translateY(-50%) scale(1.3);
-}
-
-/* Highlight connected ports */
-.node-port.connected {
-  background-color: var(--accent-color-light, #5d9fff);
-  box-shadow: 0 0 0 3px rgba(63, 140, 255, 0.5);
 }
