@@ -508,9 +508,8 @@ function updateTempConnectionLine(startX, startY, endX, endY) {
   tempConnectionLine.setAttribute('d', path);
 }
 
-/**
- * Update all connections
- */
+// Update the updateConnections function to make connections more obvious
+
 function updateConnections() {
   const svg = document.getElementById('connections');
   if (!svg) return;
@@ -524,14 +523,15 @@ function updateConnections() {
   const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
   const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
   marker.setAttribute('id', 'arrowhead');
-  marker.setAttribute('markerWidth', '10');
-  marker.setAttribute('markerHeight', '7');
-  marker.setAttribute('refX', '9');
-  marker.setAttribute('refY', '3.5');
+  marker.setAttribute('markerWidth', '12');
+  marker.setAttribute('markerHeight', '8');
+  marker.setAttribute('refX', '10');
+  marker.setAttribute('refY', '4');
   marker.setAttribute('orient', 'auto');
+  marker.setAttribute('markerUnits', 'userSpaceOnUse');
   
   const arrowPath = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-  arrowPath.setAttribute('points', '0 0, 10 3.5, 0 7');
+  arrowPath.setAttribute('points', '0 0, 12 4, 0 8');
   arrowPath.setAttribute('fill', '#3f8cff');
   
   marker.appendChild(arrowPath);
@@ -539,13 +539,30 @@ function updateConnections() {
   svg.appendChild(defs);
   
   // Add flow animation definitions
+  const glowFilter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+  glowFilter.setAttribute('id', 'glow');
+  glowFilter.setAttribute('x', '-20%');
+  glowFilter.setAttribute('y', '-20%');
+  glowFilter.setAttribute('width', '140%');
+  glowFilter.setAttribute('height', '140%');
+  
+  const feGaussianBlur = document.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
+  feGaussianBlur.setAttribute('stdDeviation', '3');
+  feGaussianBlur.setAttribute('result', 'blur');
+  
+  const feComposite = document.createElementNS('http://www.w3.org/2000/svg', 'feComposite');
+  feComposite.setAttribute('in', 'SourceGraphic');
+  feComposite.setAttribute('in2', 'blur');
+  feComposite.setAttribute('operator', 'over');
+  
+  glowFilter.appendChild(feGaussianBlur);
+  glowFilter.appendChild(feComposite);
+  defs.appendChild(glowFilter);
+  
+  // Add animated gradient
   const flowDef = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
   flowDef.setAttribute('id', 'flow-gradient');
   flowDef.setAttribute('gradientUnits', 'userSpaceOnUse');
-  flowDef.setAttribute('x1', '0%');
-  flowDef.setAttribute('y1', '0%');
-  flowDef.setAttribute('x2', '100%');
-  flowDef.setAttribute('y2', '0%');
   
   // Add animated stops
   const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
@@ -577,6 +594,22 @@ function updateConnections() {
   flowDef.appendChild(stop3);
   defs.appendChild(flowDef);
   
+  // Mark connected ports
+  connections.forEach(conn => {
+    const fromNode = document.getElementById(conn.from);
+    const toNode = document.getElementById(conn.to);
+    
+    if (fromNode && toNode) {
+      const outputPort = fromNode.querySelector('.node-port.output');
+      const inputPort = toNode.querySelector('.node-port.input');
+      
+      if (outputPort && inputPort) {
+        outputPort.classList.add('connected');
+        inputPort.classList.add('connected');
+      }
+    }
+  });
+  
   // Draw connections
   connections.forEach(conn => {
     // Find ports
@@ -601,32 +634,62 @@ function updateConnections() {
     const toX = (toRect.left + toRect.width / 2 - contentRect.left) / canvasScale;
     const toY = (toRect.top + toRect.height / 2 - contentRect.top) / canvasScale;
     
-    // Create curved path
+    // Create connection container group
+    const connectionGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    connectionGroup.setAttribute('class', 'connection-group');
+    connectionGroup.setAttribute('data-from', conn.from);
+    connectionGroup.setAttribute('data-to', conn.to);
+    
+    // Calculate distance for control points
     const dx = toX - fromX;
-    const controlPointOffset = Math.min(Math.abs(dx) * 0.5, 150);
+    const dy = toY - fromY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const controlPointOffset = Math.min(distance * 0.5, 150);
     
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', `M ${fromX} ${fromY} 
-                         C ${fromX + controlPointOffset} ${fromY}, 
-                           ${toX - controlPointOffset} ${toY}, 
-                           ${toX} ${toY}`);
+    // Create curved path
+    const pathD = `M ${fromX} ${fromY} 
+                 C ${fromX + controlPointOffset} ${fromY}, 
+                   ${toX - controlPointOffset} ${toY}, 
+                   ${toX} ${toY}`;
     
-    // Base path (thicker, with gradient fill)
+    // Base path (thicker, with glow)
     const basePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    basePath.setAttribute('d', path.getAttribute('d'));
+    basePath.setAttribute('d', pathD);
     basePath.setAttribute('stroke', '#3f8cff');
-    basePath.setAttribute('stroke-width', '3');
+    basePath.setAttribute('stroke-width', '4');
     basePath.setAttribute('fill', 'none');
     basePath.setAttribute('stroke-opacity', '0.3');
-    svg.appendChild(basePath);
+    basePath.setAttribute('filter', 'url(#glow)');
+    connectionGroup.appendChild(basePath);
     
-    // Animated path
-    path.setAttribute('stroke', 'url(#flow-gradient)');
-    path.setAttribute('stroke-width', '2');
-    path.setAttribute('fill', 'none');
-    path.setAttribute('marker-end', 'url(#arrowhead)');
+    // Main path
+    const mainPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    mainPath.setAttribute('d', pathD);
+    mainPath.setAttribute('stroke', 'url(#flow-gradient)');
+    mainPath.setAttribute('stroke-width', '2.5');
+    mainPath.setAttribute('fill', 'none');
+    mainPath.setAttribute('marker-end', 'url(#arrowhead)');
+    mainPath.setAttribute('class', 'flow-path');
+    connectionGroup.appendChild(mainPath);
     
-    svg.appendChild(path);
+    // Add connection endpoint dots for extra visibility
+    const startDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    startDot.setAttribute('cx', fromX);
+    startDot.setAttribute('cy', fromY);
+    startDot.setAttribute('r', '3');
+    startDot.setAttribute('class', 'connection-dot');
+    connectionGroup.appendChild(startDot);
+    
+    svg.appendChild(connectionGroup);
+    
+    // Make connection interactive
+    connectionGroup.addEventListener('mouseenter', () => {
+      mainPath.classList.add('connection-highlight');
+    });
+    
+    connectionGroup.addEventListener('mouseleave', () => {
+      mainPath.classList.remove('connection-highlight');
+    });
   });
 }
 

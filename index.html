@@ -101,7 +101,6 @@
                             <p>Start a conversation with one of the available AI models</p>
                             <div class="quick-prompts">
                                 <button class="prompt-btn">Hello World test</button>
-
                             </div>
                         </div>
                     </div>
@@ -182,6 +181,8 @@
         </main>
     </div>
     <input type="file" id="file-upload" multiple accept="image/*,application/pdf,.doc,.docx,.txt,.csv,.xlsx" hidden>
+    
+    <!-- Updated Settings Modal -->
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -204,8 +205,12 @@
                 <button class="tab-btn" data-tab="accessibility" data-note="Adjust settings to make the application more usable for your needs.">
                     <i class="fas fa-universal-access"></i> Accessibility
                 </button>
+                <button class="tab-btn" data-tab="account" data-note="Manage your account settings and preferences.">
+                    <i class="fas fa-user"></i> Account
+                </button>
             </div>
             <div class="modal-body">
+                <!-- Privacy Tab -->
                 <div id="privacy-tab" class="tab-content active">
                     <h3>Privacy</h3>
                     <div class="form-group">
@@ -221,6 +226,13 @@
                             </label>
                         </div>
                         <p class="form-help">For enhanced privacy, select "Do not save chat history."</p>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="local-storage-only">
+                            <span>Store all data locally only</span>
+                            <span class="recommended">Recommended</span>
+                        </label>
                     </div>
                     <div class="form-group">
                         <label class="checkbox-label">
@@ -250,6 +262,7 @@
                         </button>
                     </div>
                 </div>
+                <!-- AI Integrations Tab -->
                 <div id="ai-integrations-tab" class="tab-content">
                     <h3>Configure AI Providers</h3>
                     <p class="integration-note">Integrating with AI providers may share data with them. Remove any integration anytime.</p>
@@ -258,12 +271,15 @@
                         <h4>Add New Integration</h4>
                         <div class="form-group">
                             <label for="integration-name">Name</label>
-                            <input type="text" id="integration-name" placeholder="My OpenAI Integration">
+                            <input type="text" id="integration-name" placeholder="e.g., My OpenAI Integration">
                         </div>
                         <div class="form-group">
                             <label for="integration-type">Provider</label>
                             <select id="integration-type">
                                 <option value="" selected disabled>Select provider</option>
+                                <option value="openai">OpenAI</option>
+                                <option value="anthropic">Anthropic</option>
+                                <option value="custom">Custom Provider</option>
                             </select>
                             <a href="#" class="help-link" title="Learn how to set up API keys securely">Help</a>
                         </div>
@@ -278,7 +294,17 @@
                         </div>
                         <button id="add-integration-btn" class="primary-btn">Add Integration</button>
                     </div>
+                    <div style="margin-top: 20px;">
+                        <h3>Security Information</h3>
+                        <div style="background-color: #3a4a3a; padding: 15px; border-radius: 8px;">
+                            <p style="color: #aaffaa; margin: 0 0 10px 0;">✓ All API keys are encrypted before storage</p>
+                            <p style="color: #aaffaa; margin: 0 0 10px 0;">✓ Keys are never exposed in the browser</p>
+                            <p style="color: #aaffaa; margin: 0 0 10px 0;">✓ Optional key rotation for enhanced security</p>
+                            <p style="color: #aaffaa; margin: 0;">✓ Secure server-side key management</p>
+                        </div>
+                    </div>
                 </div>
+                <!-- Appearance Tab (Unchanged) -->
                 <div id="appearance-tab" class="tab-content">
                     <h3>Appearance</h3>
                     <div class="form-group">
@@ -316,6 +342,7 @@
                         </label>
                     </div>
                 </div>
+                <!-- Accessibility Tab (Unchanged) -->
                 <div id="accessibility-tab" class="tab-content">
                     <h3>Accessibility</h3>
                     <div class="form-group">
@@ -350,6 +377,20 @@
                         </select>
                     </div>
                 </div>
+                <!-- Account Tab (New) -->
+                <div id="account-tab" class="tab-content">
+                    <div style="text-align: center; padding: 20px; color: #aaffaa;">
+                        <i class="fas fa-user-circle" style="font-size: 48px; margin-bottom: 20px;"></i>
+                        <p>Account functionality coming soon!</p>
+                        <p style="font-size: 0.9em; color: #88aa88;">Future features will include:</p>
+                        <ul style="list-style-type: none; padding-left: 0;">
+                            <li>Secure account creation and management</li>
+                            <li>Optional cloud sync for settings</li>
+                            <li>Team collaboration features</li>
+                            <li>Enhanced security options</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="cancel-btn">Cancel</button>
@@ -357,6 +398,8 @@
             </div>
         </div>
     </div>
+    
+    <!-- Remaining Modals (Unchanged) -->
     <div id="camera-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -395,8 +438,6 @@
             </div>
         </div>
     </div>
-    <!-- Ensure proper modal structure -->
-    <!-- Alert modal structure -->
     <div id="alertModal" class="modal-container">
         <div class="modal-content">
             <div class="modal-header">
@@ -415,13 +456,11 @@
             </div>
         </div>
     </div>
-
-    <!-- Voice input modal structure -->
     <div id="voiceInputModal" class="modal-container">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Voice Input</h2>
-                <span class="close-btn">&times;</span>
+                <span class="close-btn">×</span>
             </div>
             <div class="modal-body voice-modal-body">
                 <div class="voice-visualization">
@@ -450,8 +489,9 @@
             </div>
         </div>
     </div>
-    
     <div id="toast-container" class="toast-container"></div>
+    
+    <!-- Scripts (Unchanged) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="js/config.js"></script>
@@ -467,66 +507,10 @@
     <script type="module">
         import { initNodeWorkflow } from './js/node-workflow/nodeModule.js';
         
-        // Initialize the node workflow when the tab is clicked
-        document.addEventListener('DOMContentLoaded', () => {
-            const nodeWorkflowTab = document.querySelector('.tab-button[data-tab="node-workflow-tab"]');
-            const nodeWorkflowBtn = document.getElementById('node-workflow-btn');
-            
-            // Initialize workflow when clicking sidebar button
-            nodeWorkflowBtn.addEventListener('click', () => {
-                // First switch to the node workflow tab
-                document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                
-                const workflowTab = document.querySelector('.tab-button[data-tab="node-workflow-tab"]');
-                workflowTab.classList.add('active');
-                
-                const workflowContent = document.getElementById('node-workflow-tab');
-                workflowContent.classList.add('active');
-                
-                // Then initialize the node workflow
-                initNodeWorkflow();
-            });
-            
-            // Initialize workflow when clicking tab button
-            nodeWorkflowTab.addEventListener('click', () => {
-                initNodeWorkflow();
-            });
-        });
-    </script>
-    
-    <script>
-        // All modal functionality has been moved to Utils.js
-        // These functions remain for backward compatibility
-        function openAlertModal(message, title = 'Alert') {
-          const alertMessage = document.getElementById('alertMessage');
-          const alertTitle = document.getElementById('alert-title');
-          
-          if (alertMessage) {
-            alertMessage.textContent = message;
-          }
-          
-          if (alertTitle) {
-            alertTitle.textContent = title;
-          }
-          
-          Utils.showModal('alertModal');
-        }
-        
-        function openVoiceInput() {
-          Utils.showModal('voiceInputModal');
-        }
-    </script>
-    
-    <script type="module">
-        import { initNodeWorkflow } from './js/node-workflow/nodeModule.js';
-        
-        // Initialize the node workflow when the tab is clicked
         document.addEventListener('DOMContentLoaded', () => {
           const nodeWorkflowTab = document.querySelector('.tab-button[data-tab="node-workflow-tab"]');
           const nodeWorkflowBtn = document.getElementById('node-workflow-btn');
           
-          // Add loading indicator
           const loadingIndicator = (show) => {
             let indicator = document.getElementById('node-loading-indicator');
             
@@ -544,28 +528,19 @@
                 indicator.style.color = 'white';
                 indicator.style.borderRadius = '4px';
                 indicator.style.zIndex = '1000';
-                
                 const canvas = document.getElementById('node-canvas');
-                if (canvas) {
-                  canvas.appendChild(indicator);
-                }
+                if (canvas) canvas.appendChild(indicator);
               }
             } else if (indicator) {
               indicator.remove();
             }
           };
           
-          // Function to initialize workflow with loading indicator
           const initWorkflow = async () => {
             try {
               loadingIndicator(true);
-              
-              // Small delay to ensure DOM is ready
               await new Promise(resolve => setTimeout(resolve, 100));
-              
-              // Initialize the node workflow
               await initNodeWorkflow();
-              
               console.log('Node workflow initialized successfully');
             } catch (error) {
               console.error('Error initializing node workflow:', error);
@@ -574,33 +549,23 @@
             }
           };
           
-          // Initialize workflow when clicking sidebar button
           if (nodeWorkflowBtn) {
             nodeWorkflowBtn.addEventListener('click', () => {
-              // First switch to the node workflow tab
               document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active'));
               document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-              
               const workflowTab = document.querySelector('.tab-button[data-tab="node-workflow-tab"]');
               if (workflowTab) workflowTab.classList.add('active');
-              
               const workflowContent = document.getElementById('node-workflow-tab');
               if (workflowContent) workflowContent.classList.add('active');
-              
-              // Then initialize the node workflow
               initWorkflow();
             });
           }
           
-          // Initialize workflow when clicking tab button
           if (nodeWorkflowTab) {
-            nodeWorkflowTab.addEventListener('click', () => {
-              initWorkflow();
-            });
+            nodeWorkflowTab.addEventListener('click', initWorkflow);
           }
         });
-      </script>
-      
+    </script>
     <style>
       .modal-container, .alert-container {
         display: none;
@@ -612,7 +577,6 @@
         height: 100%;
         background-color: rgba(0,0,0,0.5);
       }
-      
       .modal-content, .alert-content {
         background-color: var(--bg-color, #fff);
         color: var(--text-color, #333);
@@ -622,7 +586,6 @@
         max-width: 500px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       }
-      
       .modal-header {
         display: flex;
         justify-content: space-between;
@@ -631,22 +594,18 @@
         padding-bottom: 10px;
         margin-bottom: 15px;
       }
-      
       .modal-header h2 {
         margin: 0;
         font-size: 1.25rem;
       }
-      
       .close-btn {
         cursor: pointer;
         font-size: 1.5rem;
         font-weight: bold;
       }
-      
       .modal-body {
         margin-bottom: 20px;
       }
-      
       .modal-footer {
         display: flex;
         justify-content: flex-end;

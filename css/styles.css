@@ -1012,13 +1012,6 @@ a {
     background-color: var(--primary-hover);
 }
 
-#node-canvas {
-    flex: 1;
-    position: relative;
-    background: radial-gradient(circle, var(--bg-tertiary) 1px, transparent 1px);
-    background-size: 20px 20px;
-}
-
 #connections {
     position: absolute;
     top: 0;
