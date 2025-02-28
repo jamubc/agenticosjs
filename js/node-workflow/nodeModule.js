@@ -6,7 +6,7 @@
 import NodeItem from './nodeGraphClass.js';
 
 // Arrays for nodes and connections
-let nodeItems = []; // Each element is a NodeItem instance
+let nodeItems = []; 
 let connections = [];
 
 // Canvas state
@@ -29,26 +29,20 @@ let dragOffset = { x: 0, y: 0 };
  * Initialize the node workflow editor
  */
 export function initNodeWorkflow() {
+  console.log("Initializing node workflow...");
   // Get references to DOM elements
   const canvas = document.getElementById('node-canvas');
   const svg = document.getElementById('connections');
   const sidebar = document.getElementById('node-sidebar');
   const toolbar = document.getElementById('node-toolbar');
   
-  // Modify sidebar to include our new node types
-  updateSidebar(sidebar);
+  if (!canvas || !svg) {
+    console.error("Required DOM elements not found");
+    return;
+  }
   
-  // Modify toolbar to include our new controls
-  updateToolbar(toolbar);
-  
-  // Add dotted background pattern to canvas
-  setupCanvasBackground(canvas);
-  
-  // Add zoom and pan controls
-  setupZoomControls(canvas);
-  
-  // Make the canvas draggable
-  setupCanvasDrag(canvas);
+  // Set up canvas for panning and zooming
+  setupCanvasInteractions(canvas, svg);
   
   // Set up event listeners for node creation from sidebar
   setupNodeCreation(sidebar, canvas);
@@ -62,141 +56,82 @@ export function initNodeWorkflow() {
   // Make the canvas and node items globally accessible
   window.nodeItems = nodeItems;
   window.connections = connections;
+  window.canvasScale = canvasScale;
+  window.canvasOffset = canvasOffset;
   
   // Clear any existing nodes and connections
   clearWorkflow();
+  
+  console.log("Node workflow initialized successfully");
 }
 
 /**
- * Updates the sidebar with our custom node types
+ * Set up canvas interactions (panning and zooming)
  */
-function updateSidebar(sidebar) {
-  // Clear existing node menu items
-  const existingItems = sidebar.querySelectorAll('.node-menu-item');
-  existingItems.forEach(item => {
-    if (item.id !== 'node-settings' && item.id !== 'node-help') {
-      item.remove();
-    }
-  });
+function setupCanvasInteractions(canvas, svg) {
+  const content = document.createElement('div');
+  content.id = 'canvas-content';
+  content.style.position = 'absolute';
+  content.style.top = '0';
+  content.style.left = '0';
+  content.style.width = '100%';
+  content.style.height = '100%';
+  content.style.transform = 'scale(1) translate(0px, 0px)';
+  content.style.transformOrigin = '0 0';
   
-  // Find the first h3 tag to insert our items after
-  const firstHeading = sidebar.querySelector('h3');
-  
-  // Create node type menu items
-  const nodeTypes = [
-    { id: 'http-request-node', type: 'HTTP_REQUEST', icon: 'fa-globe', label: 'HTTP Request' },
-    { id: 'display-node', type: 'DISPLAY', icon: 'fa-desktop', label: 'Display' },
-    { id: 'text-input-node', type: 'TEXT_INPUT', icon: 'fa-keyboard', label: 'Text Input' }
-  ];
-  
-  // Add each node type to the sidebar
-  nodeTypes.forEach(nodeType => {
-    const menuItem = document.createElement('div');
-    menuItem.className = 'node-menu-item';
-    menuItem.id = nodeType.id;
-    menuItem.setAttribute('data-node-type', nodeType.type);
-    menuItem.innerHTML = `<i class="fas ${nodeType.icon}"></i> ${nodeType.label}`;
-    
-    // Insert after the first heading
-    if (firstHeading && firstHeading.nextSibling) {
-      sidebar.insertBefore(menuItem, firstHeading.nextSibling);
-    } else {
-      sidebar.appendChild(menuItem);
-    }
-  });
-}
-
-/**
- * Updates the toolbar with additional controls
- */
-function updateToolbar(toolbar) {
-  // Clear button
-  const clearBtn = document.createElement('button');
-  clearBtn.id = 'clear-workflow-btn';
-  clearBtn.innerHTML = '<i class="fas fa-trash"></i> Clear';
-  clearBtn.title = 'Clear Workflow';
-  clearBtn.addEventListener('click', clearWorkflow);
-  
-  // Add to toolbar
-  toolbar.appendChild(clearBtn);
-  
-  // Find the execute all button and update its styling
-  const executeBtn = document.getElementById('execute-all-btn');
-  if (executeBtn) {
-    executeBtn.innerHTML = '<i class="fas fa-play"></i> Run Workflow';
+  // Move existing SVG inside content
+  if (canvas.contains(svg)) {
+    canvas.removeChild(svg);
   }
-}
-
-/**
- * Adds dotted background to canvas
- */
-function setupCanvasBackground(canvas) {
-  // Background is already styled via CSS in nodeModule.css
+  content.appendChild(svg);
+  canvas.appendChild(content);
   
-  // Add a container for zoom/pan
-  const canvasContent = document.createElement('div');
-  canvasContent.id = 'canvas-content';
-  canvasContent.style.position = 'absolute';
-  canvasContent.style.top = '0';
-  canvasContent.style.left = '0';
-  canvasContent.style.width = '100%';
-  canvasContent.style.height = '100%';
-  canvasContent.style.transform = 'scale(1) translate(0px, 0px)';
-  canvasContent.style.transformOrigin = '0 0';
-  canvasContent.style.transition = 'transform 0.1s';
-  
-  // Move SVG inside canvas content
-  const svg = document.getElementById('connections');
-  canvas.removeChild(svg);
-  canvasContent.appendChild(svg);
-  
-  canvas.appendChild(canvasContent);
-}
-
-/**
- * Sets up zoom controls for the canvas
- */
-function setupZoomControls(canvas) {
-  // Create zoom controls container
+  // Set up zoom controls
   const zoomControls = document.createElement('div');
   zoomControls.className = 'zoom-controls';
+  zoomControls.style.position = 'absolute';
+  zoomControls.style.bottom = '20px';
+  zoomControls.style.left = '20px';
+  zoomControls.style.zIndex = '100';
   
   // Zoom in button
   const zoomInBtn = document.createElement('button');
-  zoomInBtn.className = 'zoom-btn';
   zoomInBtn.innerHTML = '<i class="fas fa-plus"></i>';
   zoomInBtn.title = 'Zoom In';
-  zoomInBtn.addEventListener('click', () => {
-    zoomCanvas(0.1);
-  });
+  zoomInBtn.style.margin = '5px';
+  zoomInBtn.addEventListener('click', () => zoomCanvas(0.1));
   
   // Zoom out button
   const zoomOutBtn = document.createElement('button');
-  zoomOutBtn.className = 'zoom-btn';
   zoomOutBtn.innerHTML = '<i class="fas fa-minus"></i>';
   zoomOutBtn.title = 'Zoom Out';
-  zoomOutBtn.addEventListener('click', () => {
-    zoomCanvas(-0.1);
-  });
+  zoomOutBtn.style.margin = '5px';
+  zoomOutBtn.addEventListener('click', () => zoomCanvas(-0.1));
   
   // Reset zoom button
   const resetZoomBtn = document.createElement('button');
-  resetZoomBtn.className = 'zoom-btn';
   resetZoomBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
-  resetZoomBtn.title = 'Reset Zoom';
-  resetZoomBtn.addEventListener('click', () => {
-    resetCanvasTransform();
-  });
+  resetZoomBtn.title = 'Reset View';
+  resetZoomBtn.style.margin = '5px';
+  resetZoomBtn.addEventListener('click', resetCanvasTransform);
   
-  // Add buttons to controls
   zoomControls.appendChild(zoomOutBtn);
   zoomControls.appendChild(resetZoomBtn);
   zoomControls.appendChild(zoomInBtn);
-  
-  // Add zoom controls to canvas
   canvas.appendChild(zoomControls);
   
-  // Add mouse wheel zoom
+  // Canvas dragging (panning)
+  canvas.addEventListener('mousedown', (e) => {
+    // Only start dragging on direct canvas background clicks
+    if (e.target === canvas || e.target === content) {
+      isDraggingCanvas = true;
+      lastMousePos = { x: e.clientX, y: e.clientY };
+      canvas.style.cursor = 'grabbing';
+      e.preventDefault();
+    }
+  });
+  
+  // Mouse wheel zooming
   canvas.addEventListener('wheel', (e) => {
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
@@ -204,79 +139,8 @@ function setupZoomControls(canvas) {
       zoomCanvas(delta, { x: e.clientX, y: e.clientY });
     }
   });
-}
-
-/**
- * Zooms the canvas by the specified delta
- */
-function zoomCanvas(delta, point) {
-  const canvas = document.getElementById('node-canvas');
-  const content = document.getElementById('canvas-content');
   
-  // Calculate new scale
-  const newScale = Math.max(0.5, Math.min(2, canvasScale + delta));
-  
-  // If scale didn't change, return
-  if (newScale === canvasScale) return;
-  
-  // If point is specified, zoom towards that point
-  if (point) {
-    const canvasRect = canvas.getBoundingClientRect();
-    const mouseX = point.x - canvasRect.left;
-    const mouseY = point.y - canvasRect.top;
-    
-    // Calculate offsets to keep the point under the mouse cursor
-    const scaleRatio = newScale / canvasScale;
-    canvasOffset.x = mouseX - scaleRatio * (mouseX - canvasOffset.x);
-    canvasOffset.y = mouseY - scaleRatio * (mouseY - canvasOffset.y);
-  }
-  
-  // Update scale
-  canvasScale = newScale;
-  
-  // Apply transform
-  content.style.transform = `scale(${canvasScale}) translate(${canvasOffset.x}px, ${canvasOffset.y}px)`;
-  
-  // Update connections
-  updateConnections();
-}
-
-/**
- * Resets the canvas transform (zoom and pan)
- */
-function resetCanvasTransform() {
-  const content = document.getElementById('canvas-content');
-  
-  canvasScale = 1;
-  canvasOffset = { x: 0, y: 0 };
-  
-  content.style.transform = 'scale(1) translate(0px, 0px)';
-  
-  // Update connections
-  updateConnections();
-}
-
-/**
- * Makes the canvas draggable (panning)
- */
-/**
- * Makes the canvas draggable (panning) - Enhanced version
- */
-function setupCanvasDrag(canvas) {
-  // Enable dragging with left mouse button directly on canvas background
-  canvas.addEventListener('mousedown', (e) => {
-    // Skip dragging if we clicked on a node or its parts
-    if (e.target !== canvas && e.target !== document.getElementById('canvas-content')) {
-      return;
-    }
-    
-    // Enable dragging with left mouse button on canvas background
-    isDraggingCanvas = true;
-    lastMousePos = { x: e.clientX, y: e.clientY };
-    canvas.style.cursor = 'grabbing';
-    e.preventDefault();
-  });
-  
+  // Mouse move for dragging
   document.addEventListener('mousemove', (e) => {
     if (isDraggingCanvas) {
       const deltaX = (e.clientX - lastMousePos.x) / canvasScale;
@@ -285,14 +149,14 @@ function setupCanvasDrag(canvas) {
       canvasOffset.x += deltaX;
       canvasOffset.y += deltaY;
       
-      const content = document.getElementById('canvas-content');
-      content.style.transform = `scale(${canvasScale}) translate(${canvasOffset.x}px, ${canvasOffset.y}px)`;
+      applyCanvasTransform();
       
       lastMousePos = { x: e.clientX, y: e.clientY };
       e.preventDefault();
     }
   });
   
+  // Mouse up to end dragging
   document.addEventListener('mouseup', () => {
     if (isDraggingCanvas) {
       isDraggingCanvas = false;
@@ -301,112 +165,7 @@ function setupCanvasDrag(canvas) {
     }
   });
   
-  // Add keyboard shortcut for temporary panning (Space + drag)
-  document.addEventListener('keydown', (e) => {
-    if (e.code === 'Space' && !e.repeat) {
-      canvas.style.cursor = 'grab';
-      
-      // Store any ongoing operation
-      const wasConnecting = isConnecting;
-      const wasDraggingNode = draggedNode !== null;
-      
-      // Add event listener for mouse down while Space is pressed
-      const spaceMouseDownHandler = (mouseEvent) => {
-        if (e.code === 'Space') {
-          isDraggingCanvas = true;
-          lastMousePos = { x: mouseEvent.clientX, y: mouseEvent.clientY };
-          canvas.style.cursor = 'grabbing';
-          
-          // Prevent normal node dragging/connecting
-          if (wasConnecting) {
-            // Clean up connecting state
-            if (tempConnectionLine && tempConnectionLine.parentNode) {
-              tempConnectionLine.parentNode.removeChild(tempConnectionLine);
-            }
-            tempConnectionLine = null;
-            isConnecting = false;
-          }
-          
-          if (wasDraggingNode) {
-            draggedNode = null;
-          }
-          
-          mouseEvent.preventDefault();
-          mouseEvent.stopPropagation();
-        }
-      };
-      
-      canvas.addEventListener('mousedown', spaceMouseDownHandler);
-      
-      // Remove the event listener when Space is released
-      const spaceUpHandler = () => {
-        canvas.removeEventListener('mousedown', spaceMouseDownHandler);
-        document.removeEventListener('keyup', spaceUpHandler);
-        canvas.style.cursor = 'default';
-      };
-      
-      document.addEventListener('keyup', spaceUpHandler, { once: true });
-    }
-  });
-  
-  // Add visual indicator for draggable canvas
-  const dragIndicator = document.createElement('div');
-  dragIndicator.className = 'drag-indicator';
-  dragIndicator.innerHTML = `
-    <div class="drag-icon">
-      <i class="fas fa-arrows-alt"></i>
-    </div>
-    <div class="drag-text">Click and drag to move canvas</div>
-  `;
-  dragIndicator.style.position = 'absolute';
-  dragIndicator.style.bottom = '80px';
-  dragIndicator.style.left = '20px';
-  dragIndicator.style.padding = '8px 12px';
-  dragIndicator.style.background = 'rgba(0,0,0,0.6)';
-  dragIndicator.style.borderRadius = '4px';
-  dragIndicator.style.color = 'white';
-  dragIndicator.style.display = 'flex';
-  dragIndicator.style.alignItems = 'center';
-  dragIndicator.style.gap = '8px';
-  dragIndicator.style.fontSize = '0.9rem';
-  dragIndicator.style.opacity = '0.7';
-  dragIndicator.style.transition = 'opacity 0.3s';
-  dragIndicator.style.pointerEvents = 'none';
-  dragIndicator.style.zIndex = '50';
-  
-  canvas.appendChild(dragIndicator);
-  
-  // Fade out the indicator after 5 seconds
-  setTimeout(() => {
-    dragIndicator.style.opacity = '0';
-  }, 5000);
-}
-  
-  document.addEventListener('mousemove', (e) => {
-    if (isDraggingCanvas) {
-      const deltaX = (e.clientX - lastMousePos.x) / canvasScale;
-      const deltaY = (e.clientY - lastMousePos.y) / canvasScale;
-      
-      canvasOffset.x += deltaX;
-      canvasOffset.y += deltaY;
-      
-      const content = document.getElementById('canvas-content');
-      content.style.transform = `scale(${canvasScale}) translate(${canvasOffset.x}px, ${canvasOffset.y}px)`;
-      
-      lastMousePos = { x: e.clientX, y: e.clientY };
-      e.preventDefault();
-    }
-  });
-  
-  document.addEventListener('mouseup', () => {
-    if (isDraggingCanvas) {
-      isDraggingCanvas = false;
-      canvas.style.cursor = 'default';
-      updateConnections();
-    }
-  });
-  
-  // Add keyboard shortcut for panning (Space)
+  // Space key for temporary panning
   document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && !e.repeat) {
       canvas.style.cursor = 'grab';
@@ -421,10 +180,70 @@ function setupCanvasDrag(canvas) {
 }
 
 /**
- * Sets up node creation from sidebar menu
+ * Zoom canvas by a delta amount
+ */
+function zoomCanvas(delta, point) {
+  const canvas = document.getElementById('node-canvas');
+  const content = document.getElementById('canvas-content');
+  
+  if (!canvas || !content) return;
+  
+  // Calculate new scale
+  const newScale = Math.max(0.25, Math.min(3, canvasScale + delta));
+  
+  // If scale didn't change, return
+  if (newScale === canvasScale) return;
+  
+  // If point is specified, zoom towards that point
+  if (point) {
+    const canvasRect = canvas.getBoundingClientRect();
+    const mouseX = point.x - canvasRect.left;
+    const mouseY = point.y - canvasRect.top;
+    
+    // Calculate offsets to keep the point under the mouse cursor
+    const scaleRatio = newScale / canvasScale;
+    canvasOffset.x = mouseX - scaleRatio * (mouseX - canvasOffset.x * canvasScale) / canvasScale;
+    canvasOffset.y = mouseY - scaleRatio * (mouseY - canvasOffset.y * canvasScale) / canvasScale;
+  }
+  
+  // Update scale
+  canvasScale = newScale;
+  
+  // Apply transform
+  applyCanvasTransform();
+  
+  // Update connections
+  updateConnections();
+}
+
+/**
+ * Apply canvas transform based on scale and offset
+ */
+function applyCanvasTransform() {
+  const content = document.getElementById('canvas-content');
+  if (!content) return;
+  
+  content.style.transform = `scale(${canvasScale}) translate(${canvasOffset.x}px, ${canvasOffset.y}px)`;
+}
+
+/**
+ * Reset canvas transform to default
+ */
+function resetCanvasTransform() {
+  canvasScale = 1;
+  canvasOffset = { x: 0, y: 0 };
+  
+  applyCanvasTransform();
+  updateConnections();
+}
+
+/**
+ * Set up node creation from sidebar
  */
 function setupNodeCreation(sidebar, canvas) {
-  // Add click handler to node menu items
+  if (!sidebar) return;
+  
+  // Add click event listeners to node menu items
   const nodeMenuItems = sidebar.querySelectorAll('.node-menu-item[data-node-type]');
   
   nodeMenuItems.forEach(item => {
@@ -436,15 +255,17 @@ function setupNodeCreation(sidebar, canvas) {
 }
 
 /**
- * Creates a new node on the canvas
+ * Create a new node
  */
 function createNode(type, canvas) {
   const content = document.getElementById('canvas-content');
+  if (!content) return null;
   
   // Create a DOM element for the node
   const nodeElement = document.createElement('div');
   nodeElement.className = 'node';
   nodeElement.setAttribute('id', `node-${Date.now()}`);
+  nodeElement.setAttribute('data-type', type);
   
   // Calculate position in canvas space
   const canvasRect = canvas.getBoundingClientRect();
@@ -455,6 +276,10 @@ function createNode(type, canvas) {
   const randomOffset = 100;
   const posX = centerX + (Math.random() * 2 - 1) * randomOffset;
   const posY = centerY + (Math.random() * 2 - 1) * randomOffset;
+  
+  // Set initial position
+  nodeElement.style.left = `${posX}px`;
+  nodeElement.style.top = `${posY}px`;
   
   // Create and set up the node
   const nodeItem = new NodeItem(type, nodeElement, { x: posX, y: posY });
@@ -470,46 +295,47 @@ function createNode(type, canvas) {
 }
 
 /**
- * Makes a node draggable
+ * Set up node dragging
  */
 function setupNodeDrag(nodeElement) {
   nodeElement.addEventListener('mousedown', (e) => {
-    // Skip if clicking on inputs, buttons, etc.
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || 
-        e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON' ||
-        e.target.classList.contains('node-port')) {
+    // Skip if clicking on ports or other interactive elements
+    if (e.target.classList.contains('node-port') || 
+        e.target.tagName === 'INPUT' || 
+        e.target.tagName === 'TEXTAREA' || 
+        e.target.tagName === 'BUTTON') {
       return;
     }
     
     // Skip if connecting
     if (isConnecting) return;
     
+    // Prevent event from bubbling to canvas
+    e.stopPropagation();
+    
     // Start dragging
     draggedNode = nodeElement;
     
-    // Get current position
+    // Calculate offset from mouse to node corner
     const rect = nodeElement.getBoundingClientRect();
-    
-    // Calculate offset from mouse position to node corner
     dragOffset.x = e.clientX - rect.left;
     dragOffset.y = e.clientY - rect.top;
-    
-    // Prevent event from bubbling to canvas
-    e.stopPropagation();
   });
 }
 
 /**
- * Updates node position during dragging
+ * Handle node dragging
  */
 document.addEventListener('mousemove', (e) => {
   if (draggedNode) {
     const canvasContent = document.getElementById('canvas-content');
+    if (!canvasContent) return;
+    
     const canvasRect = canvasContent.getBoundingClientRect();
     
     // Calculate new position in canvas space
-    let left = (e.clientX - canvasRect.left - dragOffset.x) / canvasScale;
-    let top = (e.clientY - canvasRect.top - dragOffset.y) / canvasScale;
+    const left = (e.clientX - canvasRect.left - dragOffset.x) / canvasScale;
+    const top = (e.clientY - canvasRect.top - dragOffset.y) / canvasScale;
     
     // Update node position
     draggedNode.style.left = `${left}px`;
@@ -523,16 +349,18 @@ document.addEventListener('mousemove', (e) => {
 });
 
 /**
- * Ends node dragging
+ * End node dragging
  */
 document.addEventListener('mouseup', () => {
   draggedNode = null;
 });
 
 /**
- * Sets up connection handling between nodes
+ * Set up connection handling between nodes
  */
 function setupConnectionHandling(canvas, svg) {
+  if (!canvas || !svg) return;
+  
   // Handle port mouseover
   canvas.addEventListener('mouseover', (e) => {
     if (e.target.classList.contains('node-port')) {
@@ -552,6 +380,9 @@ function setupConnectionHandling(canvas, svg) {
   // Handle port mousedown (start connection)
   canvas.addEventListener('mousedown', (e) => {
     if (e.target.classList.contains('node-port')) {
+      // Prevent event from bubbling
+      e.stopPropagation();
+      
       // Start connection
       isConnecting = true;
       connectionStartNode = e.target.getAttribute('data-node-id');
@@ -576,9 +407,6 @@ function setupConnectionHandling(canvas, svg) {
       
       // Update line
       updateTempConnectionLine(startX, startY, e.clientX, e.clientY);
-      
-      e.preventDefault();
-      e.stopPropagation();
     }
   });
   
@@ -630,14 +458,20 @@ function setupConnectionHandling(canvas, svg) {
             toNodeId = connectionStartNode;
           }
           
-          // Add connection
-          connections.push({
-            from: fromNodeId,
-            to: toNodeId
-          });
+          // Check if connection already exists
+          const connectionExists = connections.some(conn => 
+            conn.from === fromNodeId && conn.to === toNodeId);
           
-          // Update connections
-          updateConnections();
+          // Add connection if it doesn't exist
+          if (!connectionExists) {
+            connections.push({
+              from: fromNodeId,
+              to: toNodeId
+            });
+            
+            // Update connections
+            updateConnections();
+          }
         }
       }
       
@@ -647,7 +481,7 @@ function setupConnectionHandling(canvas, svg) {
       connectionStartPort = null;
       
       if (tempConnectionLine) {
-        svg.removeChild(tempConnectionLine);
+        tempConnectionLine.remove();
         tempConnectionLine = null;
       }
     }
@@ -655,31 +489,31 @@ function setupConnectionHandling(canvas, svg) {
 }
 
 /**
- * Updates the temporary connection line during creation
+ * Update temporary connection line
  */
 function updateTempConnectionLine(startX, startY, endX, endY) {
-  if (tempConnectionLine) {
-    // Create a curved path
-    const dx = endX - startX;
-    const dy = endY - startY;
-    const controlPointOffset = Math.min(Math.abs(dx) * 0.5, 150);
-    
-    // Calculate control points for bezier curve
-    const path = `M ${startX} ${startY} 
-                 C ${startX + controlPointOffset} ${startY}, 
-                   ${endX - controlPointOffset} ${endY}, 
-                   ${endX} ${endY}`;
-    
-    tempConnectionLine.setAttribute('d', path);
-  }
+  if (!tempConnectionLine) return;
+  
+  // Create a curved path
+  const dx = endX - startX;
+  const dy = endY - startY;
+  const controlPointOffset = Math.min(Math.abs(dx) * 0.5, 150);
+  
+  // Calculate control points for bezier curve
+  const path = `M ${startX} ${startY} 
+               C ${startX + controlPointOffset} ${startY}, 
+                 ${endX - controlPointOffset} ${endY}, 
+                 ${endX} ${endY}`;
+  
+  tempConnectionLine.setAttribute('d', path);
 }
 
 /**
- * Updates all connections based on node positions
+ * Update all connections
  */
 function updateConnections() {
   const svg = document.getElementById('connections');
-  const canvasContent = document.getElementById('canvas-content');
+  if (!svg) return;
   
   // Clear existing connections
   while (svg.firstChild) {
@@ -688,22 +522,60 @@ function updateConnections() {
   
   // Add marker definitions for arrow tips
   const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-  
   const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
   marker.setAttribute('id', 'arrowhead');
-  marker.setAttribute('markerWidth', '6');
-  marker.setAttribute('markerHeight', '4');
-  marker.setAttribute('refX', '6');
-  marker.setAttribute('refY', '2');
+  marker.setAttribute('markerWidth', '10');
+  marker.setAttribute('markerHeight', '7');
+  marker.setAttribute('refX', '9');
+  marker.setAttribute('refY', '3.5');
   marker.setAttribute('orient', 'auto');
   
-  const arrowPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  arrowPath.setAttribute('d', 'M0,0 L0,4 L6,2 Z');
+  const arrowPath = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+  arrowPath.setAttribute('points', '0 0, 10 3.5, 0 7');
   arrowPath.setAttribute('fill', '#3f8cff');
   
   marker.appendChild(arrowPath);
   defs.appendChild(marker);
   svg.appendChild(defs);
+  
+  // Add flow animation definitions
+  const flowDef = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+  flowDef.setAttribute('id', 'flow-gradient');
+  flowDef.setAttribute('gradientUnits', 'userSpaceOnUse');
+  flowDef.setAttribute('x1', '0%');
+  flowDef.setAttribute('y1', '0%');
+  flowDef.setAttribute('x2', '100%');
+  flowDef.setAttribute('y2', '0%');
+  
+  // Add animated stops
+  const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  stop1.setAttribute('offset', '0%');
+  stop1.setAttribute('stop-color', '#3f8cff');
+  stop1.setAttribute('stop-opacity', '0.2');
+  
+  const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  stop2.setAttribute('offset', '50%');
+  stop2.setAttribute('stop-color', '#3f8cff');
+  stop2.setAttribute('stop-opacity', '1');
+  
+  const stop3 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  stop3.setAttribute('offset', '100%');
+  stop3.setAttribute('stop-color', '#3f8cff');
+  stop3.setAttribute('stop-opacity', '0.2');
+  
+  // Add animation
+  const animate = document.createElementNS('http://www.w3.org/2000/svg', 'animate');
+  animate.setAttribute('attributeName', 'offset');
+  animate.setAttribute('values', '-1;1');
+  animate.setAttribute('dur', '3s');
+  animate.setAttribute('repeatCount', 'indefinite');
+  
+  stop2.appendChild(animate);
+  
+  flowDef.appendChild(stop1);
+  flowDef.appendChild(stop2);
+  flowDef.appendChild(stop3);
+  defs.appendChild(flowDef);
   
   // Draw connections
   connections.forEach(conn => {
@@ -721,7 +593,7 @@ function updateConnections() {
     // Get port positions
     const fromRect = outputPort.getBoundingClientRect();
     const toRect = inputPort.getBoundingClientRect();
-    const contentRect = canvasContent.getBoundingClientRect();
+    const contentRect = document.getElementById('canvas-content').getBoundingClientRect();
     
     // Calculate port center positions in canvas space
     const fromX = (fromRect.left + fromRect.width / 2 - contentRect.left) / canvasScale;
@@ -735,10 +607,21 @@ function updateConnections() {
     
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path.setAttribute('d', `M ${fromX} ${fromY} 
-                            C ${fromX + controlPointOffset} ${fromY}, 
-                              ${toX - controlPointOffset} ${toY}, 
-                              ${toX} ${toY}`);
-    path.setAttribute('stroke', '#3f8cff');
+                         C ${fromX + controlPointOffset} ${fromY}, 
+                           ${toX - controlPointOffset} ${toY}, 
+                           ${toX} ${toY}`);
+    
+    // Base path (thicker, with gradient fill)
+    const basePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    basePath.setAttribute('d', path.getAttribute('d'));
+    basePath.setAttribute('stroke', '#3f8cff');
+    basePath.setAttribute('stroke-width', '3');
+    basePath.setAttribute('fill', 'none');
+    basePath.setAttribute('stroke-opacity', '0.3');
+    svg.appendChild(basePath);
+    
+    // Animated path
+    path.setAttribute('stroke', 'url(#flow-gradient)');
     path.setAttribute('stroke-width', '2');
     path.setAttribute('fill', 'none');
     path.setAttribute('marker-end', 'url(#arrowhead)');
@@ -748,7 +631,7 @@ function updateConnections() {
 }
 
 /**
- * Sets up workflow execution
+ * Set up workflow execution
  */
 function setupWorkflowExecution() {
   const executeBtn = document.getElementById('execute-all-btn');
@@ -761,54 +644,66 @@ function setupWorkflowExecution() {
 }
 
 /**
- * Executes the workflow, processing nodes in topological order
+ * Execute the workflow
  */
 async function executeWorkflow() {
   // Build graph representation
-  const graph = buildConnectionGraph();
+  const graph = buildDependencyGraph();
   
-  // Execute in topological order
-  const nodePromises = [];
-  
+  // Execute in order
   for (const nodeId of graph.executionOrder) {
-    const nodeItem = findNodeById(nodeId);
+    const nodeItem = nodeItems.find(node => node.id === nodeId);
     
     if (nodeItem) {
-      // Execute node
-      const promise = nodeItem.run();
-      nodePromises.push(promise);
-      
       try {
-        await promise;
+        // Show running state
+        const nodeElement = document.getElementById(nodeId);
+        if (nodeElement) {
+          nodeElement.classList.add('running');
+        }
+        
+        // Run node
+        await nodeItem.run();
         
         // Pass data to connected nodes
-        const outputData = nodeItem.getOutputData();
+        const outgoingConnections = connections.filter(conn => conn.from === nodeId);
         
-        if (outputData !== null && outputData !== undefined) {
-          // Find connections from this node
-          const outgoingConnections = connections.filter(conn => conn.from === nodeId);
-          
-          for (const conn of outgoingConnections) {
-            const targetNode = findNodeById(conn.to);
-            if (targetNode) {
-              targetNode.receiveData(outputData);
-            }
+        for (const conn of outgoingConnections) {
+          const targetNodeItem = nodeItems.find(node => node.id === conn.to);
+          if (targetNodeItem && typeof targetNodeItem.receiveData === 'function') {
+            const outputData = nodeItem.getOutputData();
+            targetNodeItem.receiveData(outputData);
           }
+        }
+        
+        // Show completed state
+        if (nodeElement) {
+          nodeElement.classList.remove('running');
+          nodeElement.classList.add('completed');
+          
+          // Reset after a delay
+          setTimeout(() => {
+            nodeElement.classList.remove('completed');
+          }, 2000);
         }
       } catch (error) {
         console.error(`Error executing node ${nodeId}:`, error);
+        
+        // Show error state
+        const nodeElement = document.getElementById(nodeId);
+        if (nodeElement) {
+          nodeElement.classList.remove('running');
+          nodeElement.classList.add('error');
+        }
       }
     }
   }
-  
-  // Wait for all nodes to complete
-  await Promise.all(nodePromises);
 }
 
 /**
- * Builds a connection graph for execution ordering
+ * Build a dependency graph for execution ordering
  */
-function buildConnectionGraph() {
+function buildDependencyGraph() {
   const graph = {
     nodes: {},
     executionOrder: []
@@ -831,7 +726,7 @@ function buildConnectionGraph() {
     }
   });
   
-  // Determine execution order (topological sort)
+  // Topological sort
   const visited = new Set();
   const temp = new Set();
   
@@ -875,23 +770,16 @@ function buildConnectionGraph() {
 }
 
 /**
- * Finds a node by its ID
- */
-function findNodeById(id) {
-  return nodeItems.find(node => node.id === id);
-}
-
-/**
- * Clears the entire workflow
+ * Clear the workflow
  */
 function clearWorkflow() {
-  // Remove all nodes from the canvas
   const canvasContent = document.getElementById('canvas-content');
   
-  // Remove all node elements
+  // Remove node elements
   nodeItems.forEach(node => {
-    if (node.domElement && node.domElement.parentNode === canvasContent) {
-      canvasContent.removeChild(node.domElement);
+    const element = document.getElementById(node.id);
+    if (element && element.parentNode === canvasContent) {
+      canvasContent.removeChild(element);
     }
   });
   
@@ -899,9 +787,14 @@ function clearWorkflow() {
   nodeItems = [];
   connections = [];
   
-  // Clear connections in SVG
+  // Update UI
   updateConnections();
 }
 
-// Initialize when the module is loaded
-// initNodeWorkflow();
+// Export useful functions to window
+window.createNode = createNode;
+window.executeWorkflow = executeWorkflow;
+window.clearWorkflow = clearWorkflow;
+window.updateConnections = updateConnections;
+window.zoomCanvas = zoomCanvas;
+window.resetCanvasTransform = resetCanvasTransform;

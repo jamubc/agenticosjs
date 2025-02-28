@@ -220,7 +220,7 @@ const Utils = {
      * @param {string} title - Optional title
      * @param {number} duration - Duration in milliseconds
      */
-    showToast: function(message, type = 'info', title = '', duration = 3000) {
+    showToast: function(message, type = 'info', title = '', duration = 3300) {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
@@ -247,15 +247,15 @@ const Utils = {
       
       toast.innerHTML = `
         <div class="toast-icon">
-          <i class="fas ${icon}"></i>
-        </div>
-        <div class="toast-content">
-          <div class="toast-title">${title}</div>
-          <div class="toast-message">${message}</div>
-        </div>
-        <button class="toast-close">
-          <i class="fas fa-times"></i>
-        </button>
+  <i class="fas ${icon}"></i>
+</div>
+<div class="toast-content">
+  <div class="toast-title">${title}</div>
+  <div class="toast-message">${message}</div>
+</div>
+<button class="toast-close">
+  <i class="fas fa-times"></i>
+</button>
       `;
       
       container.appendChild(toast);

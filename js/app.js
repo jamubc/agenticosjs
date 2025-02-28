@@ -132,10 +132,126 @@ function checkBrowserCompatibility() {
   }
 }
 
-/**
- * Setup legacy global functions for node workflow
- */
 function setupLegacyGlobals() {
+  // Define a basic NodeItem class directly in app.js to prevent the "not fully loaded" warning
+  window.NodeItem = class {
+    constructor(type, domElement, connecting) {
+      this.type = type;
+      this.domElement = domElement;
+      this.id = domElement.getAttribute("id");
+      this.executed = false;
+      this.connecting = connecting;
+      this.imageUrl = "";
+      this.url = "";
+      this.offline = true;
+      this.rerun = false;
+      
+      // Set up basic structure
+      this.setupBasicUI();
+      
+      // For CHAT nodes, add input fields
+      if (type === "CHAT") {
+        this.createChatInterface();
+      }
+
+      // For PICTURE nodes, add a file input button
+      if (type === "PICTURE") {
+        this.createPictureInterface();
+      }
+    }
+    
+    setupBasicUI() {
+      // Add type-specific content
+      const header = document.createElement('div');
+      header.style.padding = '10px';
+      header.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+      header.style.borderBottom = '1px solid rgba(255, 255, 255, 0.1)';
+      header.textContent = `${this.type} Node`;
+      
+      this.domElement.appendChild(header);
+      
+      // Add content area
+      this.outputContainer = document.createElement('div');
+      this.outputContainer.style.padding = '10px';
+      this.outputContainer.textContent = `${this.type} content will appear here`;
+      
+      this.domElement.appendChild(this.outputContainer);
+    }
+    
+    createChatInterface() {
+      // Input container
+      const inputContainer = document.createElement("div");
+      inputContainer.style.padding = "1rem";
+      
+      // Question input field
+      const questionLabel = document.createElement("label");
+      questionLabel.textContent = "Question:";
+      questionLabel.style.display = "block";
+      
+      this.questionInput = document.createElement("textarea");
+      this.questionInput.name = "question";
+      this.questionInput.rows = 2;
+      this.questionInput.placeholder = "Enter your question here...";
+      this.questionInput.style.width = "100%";
+      this.questionInput.style.borderRadius = "5px";
+      
+      inputContainer.appendChild(questionLabel);
+      inputContainer.appendChild(this.questionInput);
+      
+      this.domElement.insertBefore(inputContainer, this.outputContainer);
+    }
+    
+    createPictureInterface() {
+      const inputContainer = document.createElement("div");
+      inputContainer.style.padding = "1rem";
+      
+      // File input for image selection
+      this.fileInput = document.createElement("input");
+      this.fileInput.type = "file";
+      this.fileInput.accept = "image/*";
+      
+      inputContainer.appendChild(this.fileInput);
+      this.domElement.insertBefore(inputContainer, this.outputContainer);
+    }
+    
+    run() {
+      if (this.executed && !this.rerun) {
+        console.log(`Node ${this.id} already executed`);
+        return;
+      }
+      
+      console.log(`Running node ${this.id} of type ${this.type}`);
+      
+      if (this.type === "CHAT" && this.questionInput) {
+        this.outputContainer.textContent = `Processing question: ${this.questionInput.value}`;
+      } else {
+        this.outputContainer.textContent = `${this.type} node executed at ${new Date().toLocaleTimeString()}`;
+      }
+      
+      this.executed = true;
+    }
+    
+    getConnectedNodes() {
+      if (typeof connections !== "undefined") {
+        return connections
+          .filter((conn) => conn.to === this.id)
+          .map((conn) => conn.from);
+      }
+      return [];
+    }
+    
+    findNodeItemById(nodeId) {
+      if (typeof nodeItems !== "undefined") {
+        return nodeItems.find((node) => node.id === nodeId) || null;
+      }
+      return null;
+    }
+    
+    setOutput(message) {
+      this.outputContainer.textContent = message;
+    }
+  };
+  
   window.addNode = function (type) {
     console.log(`Creating node of type: ${type}`);
     if (typeof NodeItem !== 'undefined') {
@@ -197,6 +313,62 @@ function setupLegacyGlobals() {
   window.connecting = false;
   window.connectionStartNode = null;
   window.selectedNode = null;
+  
+  window.startDrag = function(event) {
+    event.preventDefault();
+    // Get the target node
+    const node = event.target.closest('.node');
+    if (!node) return;
+    
+    // Store the initial mouse position
+    const startX = event.clientX;
+    const startY = event.clientY;
+    
+    // Store the initial node position
+    const nodeRect = node.getBoundingClientRect();
+    const nodeLeft = parseInt(node.style.left) || 0;
+    const nodeTop = parseInt(node.style.top) || 0;
+    
+    // Define the mousemove handler
+    const mouseMoveHandler = function(e) {
+      // Calculate the new position
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      
+      // Update the node position
+      node.style.left = `${nodeLeft + dx}px`;
+      node.style.top = `${nodeTop + dy}px`;
+    };
+    
+    // Define the mouseup handler
+    const mouseUpHandler = function() {
+      // Remove the event listeners
+      document.removeEventListener('mousemove', mouseMoveHandler);
+      document.removeEventListener('mouseup', mouseUpHandler);
+    };
+    
+    // Add the event listeners
+    document.addEventListener('mousemove', mouseMoveHandler);
+    document.addEventListener('mouseup', mouseUpHandler);
+  };
+  
+  window.handleNodeClick = function(event) {
+    // Simple click handler
+    const node = event.target.closest('.node');
+    if (!node) return;
+    
+    // Deselect any previously selected node
+    const selectedNode = document.querySelector('.node.selected');
+    if (selectedNode) {
+      selectedNode.classList.remove('selected');
+    }
+    
+    // Select this node
+    node.classList.add('selected');
+    
+    // Store the selected node
+    window.selectedNode = node;
+  };
 
   console.log('Legacy global functions for node workflow setup complete');
 }

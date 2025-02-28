@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="css/settings.css">
     <link rel="stylesheet" href="css/nodeModule.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="css/nodeWorkflow.css">
 </head>
 <body>
     <div id="app-container" class="theme-default">
@@ -517,6 +518,89 @@
         }
     </script>
     
+    <script type="module">
+        import { initNodeWorkflow } from './js/node-workflow/nodeModule.js';
+        
+        // Initialize the node workflow when the tab is clicked
+        document.addEventListener('DOMContentLoaded', () => {
+          const nodeWorkflowTab = document.querySelector('.tab-button[data-tab="node-workflow-tab"]');
+          const nodeWorkflowBtn = document.getElementById('node-workflow-btn');
+          
+          // Add loading indicator
+          const loadingIndicator = (show) => {
+            let indicator = document.getElementById('node-loading-indicator');
+            
+            if (show) {
+              if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'node-loading-indicator';
+                indicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading node workflow...';
+                indicator.style.position = 'absolute';
+                indicator.style.top = '50%';
+                indicator.style.left = '50%';
+                indicator.style.transform = 'translate(-50%, -50%)';
+                indicator.style.padding = '10px 20px';
+                indicator.style.backgroundColor = 'rgba(0,0,0,0.7)';
+                indicator.style.color = 'white';
+                indicator.style.borderRadius = '4px';
+                indicator.style.zIndex = '1000';
+                
+                const canvas = document.getElementById('node-canvas');
+                if (canvas) {
+                  canvas.appendChild(indicator);
+                }
+              }
+            } else if (indicator) {
+              indicator.remove();
+            }
+          };
+          
+          // Function to initialize workflow with loading indicator
+          const initWorkflow = async () => {
+            try {
+              loadingIndicator(true);
+              
+              // Small delay to ensure DOM is ready
+              await new Promise(resolve => setTimeout(resolve, 100));
+              
+              // Initialize the node workflow
+              await initNodeWorkflow();
+              
+              console.log('Node workflow initialized successfully');
+            } catch (error) {
+              console.error('Error initializing node workflow:', error);
+            } finally {
+              loadingIndicator(false);
+            }
+          };
+          
+          // Initialize workflow when clicking sidebar button
+          if (nodeWorkflowBtn) {
+            nodeWorkflowBtn.addEventListener('click', () => {
+              // First switch to the node workflow tab
+              document.querySelectorAll('.tab-button').forEach(tab => tab.classList.remove('active'));
+              document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+              
+              const workflowTab = document.querySelector('.tab-button[data-tab="node-workflow-tab"]');
+              if (workflowTab) workflowTab.classList.add('active');
+              
+              const workflowContent = document.getElementById('node-workflow-tab');
+              if (workflowContent) workflowContent.classList.add('active');
+              
+              // Then initialize the node workflow
+              initWorkflow();
+            });
+          }
+          
+          // Initialize workflow when clicking tab button
+          if (nodeWorkflowTab) {
+            nodeWorkflowTab.addEventListener('click', () => {
+              initWorkflow();
+            });
+          }
+        });
+      </script>
+      
     <style>
       .modal-container, .alert-container {
         display: none;

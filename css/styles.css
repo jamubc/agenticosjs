@@ -1530,11 +1530,13 @@ a {
     gap: 0.75rem;
     padding: 1rem;
     background-color: var(--bg-secondary);
+    color: var(--text-primary);
     border-left: 4px solid;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     min-width: 300px;
     max-width: 400px;
+    position: relative;
     animation: toast-in 0.3s ease, toast-out 0.3s ease forwards 2.7s;
 }
 
@@ -1555,22 +1557,26 @@ a {
 }
 
 .toast-icon {
+    margin-right: 15px;
+}
+
+.toast-icon i {
     font-size: var(--font-size-xl);
 }
 
-.toast.info .toast-icon {
+.toast.info .toast-icon i {
     color: var(--info-color);
 }
 
-.toast.success .toast-icon {
+.toast.success .toast-icon i {
     color: var(--success-color);
 }
 
-.toast.warning .toast-icon {
+.toast.warning .toast-icon i {
     color: var(--warning-color);
 }
 
-.toast.error .toast-icon {
+.toast.error .toast-icon i {
     color: var(--danger-color);
 }
 
@@ -1580,6 +1586,7 @@ a {
 
 .toast-title {
     font-weight: var(--font-weight-medium);
+    font-size: 16px;
     margin-bottom: 0.25rem;
 }
 
@@ -1589,15 +1596,53 @@ a {
 }
 
 .toast-close {
+    background: none;
+    border: none;
     color: var(--text-tertiary);
     padding: 0.25rem;
     border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    margin-left: auto;
     align-self: flex-start;
 }
 
 .toast-close:hover {
     background-color: var(--bg-tertiary);
     color: var(--text-primary);
+}
+
+.toast-close i {
+    font-size: 18px;
+}
+
+.toast-close:hover i {
+    color: #ff6666;
+}
+
+.toast::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    width: 100%;
+    animation: progress 3s linear forwards;
+}
+
+.toast.info::after {
+    background-color: var(--info-color);
+}
+
+.toast.success::after {
+    background-color: var(--success-color);
+}
+
+.toast.warning::after {
+    background-color: var(--warning-color);
+}
+
+.toast.error::after {
+    background-color: var(--danger-color);
 }
 
 @keyframes toast-in {
@@ -1620,6 +1665,11 @@ a {
         transform: translateX(100%);
         opacity: 0;
     }
+}
+
+@keyframes progress {
+    from { width: 100%; }
+    to { width: 0%; }
 }
 
 /* Utility animations */
