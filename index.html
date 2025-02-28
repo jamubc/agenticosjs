@@ -15,7 +15,7 @@
     <div id="app-container" class="theme-default">
         <aside id="sidebar">
             <div class="sidebar-header">
-                <img src="assets/logo.svg" alt="Logo" class="logo">
+                <img src="assets/logo.png" alt="Logo" class="logo">
                 <h1 class="app-title">IntelliFlow</h1>
                 <button id="sidebar-toggle" aria-label="Toggle Sidebar">
                     <i class="fas fa-chevron-left"></i>
@@ -35,19 +35,19 @@
                 <h2 class="section-title">Tools</h2>
                 <div class="tools-list">
                     <button class="tool-btn" data-tool="document-analysis">
-                        <i class="fas fa-file-alt"></i>
-                        <span>Document Analysis</span>
+                        <i class="window_button" aria-hidden="true"></i>
+                        <span>Analyse current window</span>
                     </button>
                     <button class="tool-btn" data-tool="image-generation">
-                        <i class="fas fa-image"></i>
+                        <i class="fas fa-image" aria-hidden="true"></i>
                         <span>Image Generation</span>
                     </button>
                     <button class="tool-btn" data-tool="code-assistant">
-                        <i class="fas fa-code"></i>
+                        <i class="fas fa-code" aria-hidden="true"></i>
                         <span>Code Assistant</span>
                     </button>
                     <button class="tool-btn" data-tool="node-workflow" id="node-workflow-btn">
-                        <i class="fas fa-project-diagram"></i>
+                        <i class="fas fa-project-diagram" aria-hidden="true"></i>
                         <span>Node Workflow</span>
                     </button>
                 </div>
@@ -99,10 +99,8 @@
                             <h2>Welcome to IntelliFlow</h2>
                             <p>Start a conversation with one of the available AI models</p>
                             <div class="quick-prompts">
-                                <button class="prompt-btn">Write a blog post about AI</button>
-                                <button class="prompt-btn">Help me debug my code</button>
-                                <button class="prompt-btn">Summarize a complex topic</button>
-                                <button class="prompt-btn">Create a content plan</button>
+                                <button class="prompt-btn">Hello World test</button>
+
                             </div>
                         </div>
                     </div>
@@ -367,7 +365,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div id="camera-container">
+                <div id="camera-container" style="display: none;">
                     <video id="camera-preview" autoplay playsinline></video>
                     <div class="camera-controls">
                         <button id="camera-switch-btn" class="secondary-btn">
@@ -457,6 +455,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
+    <script src="js/camera.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/storage.js"></script>
     <script src="js/speech.js"></script>
@@ -465,7 +464,7 @@
     <script src="js/settings.js"></script>
     <script src="js/app.js"></script>
     <script type="module">
-        import { initNodeWorkflow } from './js/modules/nodeModule.js';
+        import { initNodeWorkflow } from './js/node-workflow/nodeModule.js';
         
         // Initialize the node workflow when the tab is clicked
         document.addEventListener('DOMContentLoaded', () => {
@@ -496,111 +495,8 @@
     </script>
     
     <script>
-        // Fix for modal/alert initialization issues
-        document.addEventListener('DOMContentLoaded', function() {
-          // Get all modal/alert elements
-          const modals = document.querySelectorAll('.modal-container, .alert-container');
-          
-          // Hide all modals by default
-          modals.forEach(modal => {
-            modal.style.display = 'none';
-          });
-          
-          // Also ensure any stuck regular modals are hidden
-          document.querySelectorAll('.modal').forEach(modal => {
-            modal.classList.remove('visible');
-          });
-          
-          // Function to show a specific modal
-          window.showModal = function(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-              if (modal.classList.contains('modal')) {
-                modal.classList.add('visible');
-              } else {
-                modal.style.display = 'block';
-              }
-            }
-          };
-          
-          // Function to hide a specific modal
-          window.hideModal = function(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-              if (modal.classList.contains('modal')) {
-                modal.classList.remove('visible');
-                
-                // Special case for camera modal
-                if (modalId === 'camera-modal' && typeof UI !== 'undefined' && UI.stopCamera) {
-                  UI.stopCamera();
-                }
-              } else {
-                modal.style.display = 'none';
-              }
-            }
-          };
-          
-          // Setup event listeners for Cancel and OK buttons
-          const cancelButtons = document.querySelectorAll('.modal-container .cancel-btn, .alert-container .cancel-btn');
-          const okButtons = document.querySelectorAll('.modal-container .ok-btn, .alert-container .ok-btn');
-          
-          // Close the parent modal when Cancel is clicked
-          cancelButtons.forEach(button => {
-            button.addEventListener('click', function() {
-              const modal = this.closest('.modal-container, .alert-container');
-              if (modal) {
-                modal.style.display = 'none';
-              }
-            });
-          });
-          
-          // Close the parent modal when OK is clicked
-          okButtons.forEach(button => {
-            button.addEventListener('click', function() {
-              const modal = this.closest('.modal-container, .alert-container');
-              if (modal) {
-                modal.style.display = 'none';
-              }
-            });
-          });
-          
-          // Close modals when clicking outside of modal content
-          window.addEventListener('click', function(event) {
-            modals.forEach(modal => {
-              const modalContent = modal.querySelector('.modal-content, .alert-content');
-              if (modalContent && !modalContent.contains(event.target) && modal === event.target) {
-                modal.style.display = 'none';
-              }
-            });
-          });
-          
-          // Set up close buttons
-          const closeButtons = document.querySelectorAll('.close-btn');
-          closeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-              const modal = this.closest('.modal-container, .alert-container');
-              if (modal) {
-                modal.style.display = 'none';
-              }
-            });
-          });
-          
-          // Special handling for camera modal close button
-          const cameraModalCloseBtn = document.querySelector('#camera-modal .close-modal-btn');
-          if (cameraModalCloseBtn) {
-            cameraModalCloseBtn.addEventListener('click', function() {
-              const modal = document.getElementById('camera-modal');
-              if (modal) {
-                modal.classList.remove('visible');
-                if (typeof UI !== 'undefined' && UI.stopCamera) {
-                  UI.stopCamera();
-                }
-              }
-            });
-          }
-        });
-        
-        // Helper functions for modals
+        // All modal functionality has been moved to Utils.js
+        // These functions remain for backward compatibility
         function openAlertModal(message, title = 'Alert') {
           const alertMessage = document.getElementById('alertMessage');
           const alertTitle = document.getElementById('alert-title');
@@ -613,11 +509,11 @@
             alertTitle.textContent = title;
           }
           
-          window.showModal('alertModal');
+          Utils.showModal('alertModal');
         }
         
         function openVoiceInput() {
-          window.showModal('voiceInputModal');
+          Utils.showModal('voiceInputModal');
         }
     </script>
     

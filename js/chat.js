@@ -20,7 +20,7 @@ const Chat = {
       }
     },
     
-    /**
+    /**a
      * Start a new chat
      * @param {Array} initialMessages - Optional initial messages
      */

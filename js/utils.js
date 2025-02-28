@@ -377,5 +377,88 @@ const Utils = {
         console.error('Failed to copy:', err);
         return false;
       }
+    },
+    
+    /**
+     * Initialize modal functionality
+     * This function should be called during app initialization
+     */
+    initializeModals: function() {
+      // Make sure all modals are hidden by default and don't have conflicting display properties
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.style.display = 'none';
+        modal.classList.remove('visible');
+      });
+      
+      // Set up close buttons for all modals
+      document.querySelectorAll('.close-modal-btn, .cancel-btn').forEach(btn => {
+        // Remove existing event listeners by cloning and replacing
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        
+        // Add new event listener
+        newBtn.addEventListener('click', (e) => {
+          const modal = e.target.closest('.modal');
+          if (modal) {
+            this.hideModal(modal.id);
+          }
+        });
+      });
+      
+      // Close modal when clicking outside of content
+      document.querySelectorAll('.modal').forEach(modal => {
+        // Remove existing event listeners by cloning and replacing
+        const newModal = modal.cloneNode(true);
+        modal.parentNode.replaceChild(newModal, modal);
+        
+        // Add new event listener
+        newModal.addEventListener('click', (e) => {
+          if (e.target === newModal) {
+            this.hideModal(newModal.id);
+          }
+        });
+      });
+    },
+    
+    /**
+     * Show a modal by ID
+     * @param {string} modalId - ID of modal to show
+     */
+    showModal: function(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) {
+        console.warn(`Modal ${modalId} not found`);
+        return;
+      }
+      
+      // Ensure proper display style and add visible class
+      modal.style.display = 'flex';
+      modal.classList.add('visible');
+      
+      // Special handling for camera modal
+      if (modalId === 'camera-modal' && typeof Camera !== 'undefined' && Camera.initializeCamera) {
+        Camera.initializeCamera();
+      }
+    },
+    
+    /**
+     * Hide a modal by ID
+     * @param {string} modalId - ID of modal to hide
+     */
+    hideModal: function(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) {
+        console.warn(`Modal ${modalId} not found`);
+        return;
+      }
+      
+      // Remove visible class and ensure it's hidden
+      modal.classList.remove('visible');
+      modal.style.display = 'none';
+      
+      // Special handling for camera modal
+      if (modalId === 'camera-modal' && typeof Camera !== 'undefined' && Camera.stopCameraStream) {
+        Camera.stopCameraStream();
+      }
     }
   };

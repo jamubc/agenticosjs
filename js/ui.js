@@ -157,13 +157,8 @@ const UI = {
           });
       }
       
-      // Camera button
-      if (this.elements.cameraButton) {
-          this.elements.cameraButton.addEventListener('click', () => {
-              this.showModal('camera-modal');
-              this.initializeCamera();
-          });
-      }
+      // Camera button is now handled by the Camera module
+      // The event listener is set up in Camera.init()
       
       // New chat button
       if (this.elements.newChatButton) {
@@ -356,16 +351,8 @@ const UI = {
           });
       }
       
-      // Camera controls
-      const captureBtn = document.getElementById('camera-capture-btn');
-      const retakeBtn = document.getElementById('camera-retake-btn');
-      const acceptBtn = document.getElementById('camera-accept-btn');
-      const switchBtn = document.getElementById('camera-switch-btn');
-      
-      if (captureBtn) captureBtn.addEventListener('click', () => this.capturePhoto());
-      if (retakeBtn) retakeBtn.addEventListener('click', () => this.showCameraPreview());
-      if (acceptBtn) acceptBtn.addEventListener('click', () => this.acceptCapturedPhoto());
-      if (switchBtn) switchBtn.addEventListener('click', () => this.switchCamera());
+      // Camera controls are now handled by the Camera module
+      // These event listeners are set up in Camera.initializeCamera()
       
       // Voice controls
       const voiceStopBtn = document.getElementById('voice-stop-btn');
@@ -674,18 +661,8 @@ const UI = {
    * @param {string} modalId - ID of the modal to show
    */
   showModal: function(modalId) {
-      const modal = document.getElementById(modalId);
-      if (!modal) {
-          console.warn(`Modal ${modalId} not found`);
-          return;
-      }
-      
-      // Check if it's a normal modal or a modal-container
-      if (modal.classList.contains('modal-container')) {
-          modal.style.display = 'block';
-      } else {
-          modal.classList.add('visible');
-      }
+      // Delegate to the Utils showModal function
+      Utils.showModal(modalId);
   },
   
   /**
@@ -693,25 +670,10 @@ const UI = {
    * @param {string} modalId - ID of the modal to hide
    */
   hideModal: function(modalId) {
-      const modal = document.getElementById(modalId);
-      if (!modal) {
-          console.warn(`Modal ${modalId} not found`);
-          return;
-      }
+      // Delegate to the Utils hideModal function
+      Utils.hideModal(modalId);
       
-      // Check if it's a normal modal or a modal-container
-      if (modal.classList.contains('modal-container')) {
-          modal.style.display = 'none';
-      } else {
-          modal.classList.remove('visible');
-      }
-      
-      // Stop camera if camera modal is closed
-      if (modalId === 'camera-modal') {
-          this.stopCamera();
-      }
-      
-      // Stop speech recognition if voice modal is closed
+      // Additional cleanup for special modals
       if (modalId === 'voice-modal') {
           Speech.stopSpeechRecognition();
       }
@@ -1075,156 +1037,12 @@ const UI = {
   },
   
   /**
-   * Initialize camera for taking photos
-   */
-  initializeCamera: async function() {
-      const cameraContainer = document.getElementById('camera-container');
-      const cameraPreview = document.getElementById('camera-preview');
-      const previewContainer = document.getElementById('camera-preview-container');
-      
-      if (!cameraContainer || !cameraPreview || !previewContainer) {
-          console.warn('Camera elements not found');
-          return;
-      }
-      
-      // Ensure the close button works properly
-      const closeButton = document.querySelector('#camera-modal .close-modal-btn');
-      if (closeButton) {
-          // Remove existing event listeners to avoid duplicates
-          closeButton.replaceWith(closeButton.cloneNode(true));
-          // Add a fresh event listener
-          document.querySelector('#camera-modal .close-modal-btn').addEventListener('click', () => {
-              this.hideModal('camera-modal');
-          });
-      }
-      
-      try {
-          // Get user media with camera
-          this.cameraStream = await navigator.mediaDevices.getUserMedia({ 
-              video: { facingMode: 'environment' }
-          });
-          
-          // Show camera preview
-          cameraPreview.srcObject = this.cameraStream;
-          cameraContainer.style.display = 'block';
-          previewContainer.style.display = 'none';
-      } catch (error) {
-          console.error('Error accessing camera:', error);
-          Utils.showToast('Could not access camera. Please ensure camera permissions are granted.', 'error');
-          this.hideModal('camera-modal');
-      }
-  },
-  
-  /**
-   * Switch between front and back cameras
-   */
-  switchCamera: async function() {
-      if (!this.cameraStream) return;
-      
-      // Get current camera facing mode
-      const currentTracks = this.cameraStream.getVideoTracks();
-      if (!currentTracks || currentTracks.length === 0) return;
-      
-      const currentFacingMode = currentTracks[0].getSettings().facingMode;
-      const newFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
-      
-      // Stop current stream
-      this.stopCamera();
-      
-      try {
-          // Get new stream with different camera
-          this.cameraStream = await navigator.mediaDevices.getUserMedia({ 
-              video: { facingMode: newFacingMode }
-          });
-          
-          // Update camera preview
-          const cameraPreview = document.getElementById('camera-preview');
-          if (cameraPreview) {
-              cameraPreview.srcObject = this.cameraStream;
-          }
-      } catch (error) {
-          console.error('Error switching camera:', error);
-          Utils.showToast('Could not switch camera', 'error');
-      }
-  },
-  
-  /**
-   * Capture photo from camera
-   */
-  capturePhoto: function() {
-      if (!this.cameraStream) return;
-      
-      const cameraContainer = document.getElementById('camera-container');
-      const previewContainer = document.getElementById('camera-preview-container');
-      const canvas = document.getElementById('capture-canvas');
-      const video = document.getElementById('camera-preview');
-      
-      if (!cameraContainer || !previewContainer || !canvas || !video) {
-          console.warn('Camera capture elements not found');
-          return;
-      }
-      
-      // Set canvas dimensions to match video
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      
-      // Draw video frame to canvas
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
-      // Hide camera, show capture preview
-      cameraContainer.style.display = 'none';
-      previewContainer.style.display = 'block';
-  },
-  
-  /**
-   * Show camera preview (for retaking photo)
-   */
-  showCameraPreview: function() {
-      const cameraContainer = document.getElementById('camera-container');
-      const previewContainer = document.getElementById('camera-preview-container');
-      
-      if (!cameraContainer || !previewContainer) {
-          console.warn('Camera container elements not found');
-          return;
-      }
-      
-      cameraContainer.style.display = 'block';
-      previewContainer.style.display = 'none';
-  },
-  
-  /**
-   * Accept captured photo
-   */
-  acceptCapturedPhoto: function() {
-      const canvas = document.getElementById('capture-canvas');
-      if (!canvas) {
-          console.warn('Capture canvas not found');
-          return;
-      }
-      
-      const imageData = canvas.toDataURL('image/jpeg');
-      
-      // Convert data URL to File object
-      const blob = Utils.base64ToBlob(imageData, 'image/jpeg');
-      const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
-      
-      // Add the file to uploads
-      this.state.uploadedFiles.push(file);
-      this.addFileToPreview(file);
-      this.updateButtonStates();
-      
-      // Hide the camera modal
-      this.hideModal('camera-modal');
-  },
-  
-  /**
-   * Stop camera stream
+   * Stop camera stream - kept for backward compatibility
+   * @deprecated Use Camera.stopCameraStream() instead
    */
   stopCamera: function() {
-      if (this.cameraStream) {
-          this.cameraStream.getTracks().forEach(track => track.stop());
-          this.cameraStream = null;
+      if (typeof Camera !== 'undefined' && Camera.stopCameraStream) {
+          Camera.stopCameraStream();
       }
   },
   

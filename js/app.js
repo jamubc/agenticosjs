@@ -46,6 +46,9 @@ function initializeApp() {
     // Add keyboard shortcuts
     setupKeyboardShortcuts();
 
+    // Initialize modals
+    Utils.initializeModals();
+
     // Check browser compatibility
     checkBrowserCompatibility();
 
@@ -99,7 +102,7 @@ function setupKeyboardShortcuts() {
       const openModal = document.querySelector('.modal.visible');
       if (openModal) {
         e.preventDefault();
-        UI.hideModal(openModal.id);
+        Utils.hideModal(openModal.id);
       }
     }
   });
