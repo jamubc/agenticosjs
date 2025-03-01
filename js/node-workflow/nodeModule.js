@@ -29,11 +29,14 @@ export function initNodeWorkflow() {
   setupConnectionHandling(canvas, svg);
   setupWorkflowExecution();
 
+  // Expose necessary functions to window for global access
   window.nodeItems = nodeItems;
   window.connections = connections;
   window.canvasScale = canvasScale;
   window.canvasOffset = canvasOffset;
   window.deleteNode = deleteNode;
+  window.addNode = createNode;  // Expose createNode as addNode for UI
+  window.executeRequests = executeWorkflow; // Expose executeWorkflow as executeRequests for UI
 
   clearWorkflow();
 
@@ -252,6 +255,8 @@ function setupNodeDrag(nodeElement) {
 
 function setupNodeResize(nodeElement) {
   const resizeHandle = nodeElement.querySelector('.node-resize-handle');
+  if (!resizeHandle) return;
+  
   let isResizing = false;
   let startX, startY, startWidth, startHeight;
 
@@ -582,7 +587,7 @@ async function executeDependentNodes(nodeItem) {
   try {
     const nodeElement = document.getElementById(nodeItem.id);
     if (nodeElement) {
-      nodeElement.className = 'running';
+      nodeElement.classList.add('running');
     }
 
     await nodeItem.run();
@@ -640,6 +645,7 @@ function buildDependencyGraph() {
 
 function clearWorkflow() {
   const canvasContent = document.getElementById('canvas-content');
+  if (!canvasContent) return;
 
   nodeItems.forEach(node => {
     if (node.type === 'TIMER_TRIGGER') {
@@ -657,9 +663,13 @@ function clearWorkflow() {
   updateConnections();
 }
 
+// Expose necessary functions to window
 window.createNode = createNode;
 window.executeWorkflow = executeWorkflow;
 window.clearWorkflow = clearWorkflow;
 window.updateConnections = updateConnections;
 window.zoomCanvas = zoomCanvas;
 window.resetCanvasTransform = resetCanvasTransform;
+// Add the missing functions that the UI is looking for
+window.addNode = createNode; 
+window.executeRequests = executeWorkflow;

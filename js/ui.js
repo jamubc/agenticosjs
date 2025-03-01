@@ -111,138 +111,138 @@ const UI = {
   },
   
   /**
-   * Setup all event listeners for UI elements
-   */
-  setupEventListeners: function() {
-      // Sidebar toggle
-      if (this.elements.sidebarToggle) {
-          this.elements.sidebarToggle.addEventListener('click', () => {
-              this.toggleSidebar();
-          });
-      }
-      
-      // Message input events
-      if (this.elements.messageInput) {
-          this.elements.messageInput.addEventListener('input', this.handleInputChange.bind(this));
-          this.elements.messageInput.addEventListener('keydown', (e) => {
-              // Send on Enter (but not with Shift key)
-              if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  this.handleSendMessage();
-              }
-          });
-      }
-      
-      // Send button
-      if (this.elements.sendButton) {
-          this.elements.sendButton.addEventListener('click', this.handleSendMessage.bind(this));
-      }
-      
-      // Voice input button
-      if (this.elements.voiceInputButton) {
-          this.elements.voiceInputButton.addEventListener('click', () => {
-              this.showModal('voice-modal');
-              Speech.startSpeechRecognition();
-          });
-      }
-      
-      // File upload
-      if (this.elements.uploadButton && this.elements.fileUpload) {
-          this.elements.uploadButton.addEventListener('click', () => {
-              this.elements.fileUpload.click();
-          });
-          
-          this.elements.fileUpload.addEventListener('change', (e) => {
-              this.handleFileUpload(e.target.files);
-          });
-      }
-      
-      // Camera button is now handled by the Camera module
-      // The event listener is set up in Camera.init()
-      
-      // New chat button
-      if (this.elements.newChatButton) {
-          this.elements.newChatButton.addEventListener('click', () => {
-              Chat.startNewChat();
-          });
-      }
-      
-      // Settings button
-      if (this.elements.settingsButton) {
-          this.elements.settingsButton.addEventListener('click', () => {
-              this.showModal('settings-modal');
-              Settings.loadSettings();
-          });
-      }
-      
-      // Theme buttons
-      if (this.elements.lightThemeButton) {
-          this.elements.lightThemeButton.addEventListener('click', () => {
-              this.applyTheme('light');
-              Storage.updateSettings({ theme: 'light' });
-          });
-      }
-      
-      if (this.elements.darkThemeButton) {
-          this.elements.darkThemeButton.addEventListener('click', () => {
-              this.applyTheme('dark');
-              Storage.updateSettings({ theme: 'dark' });
-          });
-      }
-      
-      // Model selector
-      if (this.elements.modelSelector) {
-          this.elements.modelSelector.addEventListener('change', (e) => {
-              const modelId = e.target.value;
-              Models.selectModel(modelId);
-          });
-      }
-      
-      // Quick prompt buttons
-      document.querySelectorAll('.prompt-btn').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-              if (this.elements.messageInput) {
-                  this.elements.messageInput.value = e.target.textContent;
-                  this.handleInputChange();
-                  this.elements.messageInput.focus();
-              }
-          });
-      });
-      
-      // Node menu items
-      document.querySelectorAll('.node-menu-item').forEach(item => {
-          if (item.dataset.nodeType) {
-              item.addEventListener('click', () => {
-                  if (typeof addNode === 'function') {
-                      addNode(item.dataset.nodeType);
-                  } else {
-                      console.warn('addNode function not found');
-                      Utils.showToast('Node functionality not available', 'warning');
-                  }
-              });
-          }
-      });
-      
-      // Execute all button for node workflow
-      const executeAllBtn = document.getElementById('execute-all-btn');
-      if (executeAllBtn) {
-          executeAllBtn.addEventListener('click', () => {
-              if (typeof executeRequests === 'function') {
-                  executeRequests();
-              } else {
-                  console.warn('executeRequests function not found');
-                  Utils.showToast('Node execution functionality not available', 'warning');
-              }
-          });
-      }
-      
-      // Window resize handling
-      window.addEventListener('resize', Utils.debounce(() => {
-          // Auto collapse sidebar on small screens
-          if (window.innerWidth < 768 && !this.state.isSidebarCollapsed) {
-              this.toggleSidebar(true);
-          }
-      }, 250));
+ * Setup all event listeners for UI elements
+ */
+setupEventListeners: function() {
+    // Sidebar toggle
+    if (this.elements.sidebarToggle) {
+        this.elements.sidebarToggle.addEventListener('click', () => {
+            this.toggleSidebar();
+        });
+    }
+    
+    // Message input events
+    if (this.elements.messageInput) {
+        this.elements.messageInput.addEventListener('input', this.handleInputChange.bind(this));
+        this.elements.messageInput.addEventListener('keydown', (e) => {
+            // Send on Enter (but not with Shift key)
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.handleSendMessage();
+            }
+        });
+    }
+    
+    // Send button
+    if (this.elements.sendButton) {
+        this.elements.sendButton.addEventListener('click', this.handleSendMessage.bind(this));
+    }
+    
+    // Voice input button
+    if (this.elements.voiceInputButton) {
+        this.elements.voiceInputButton.addEventListener('click', () => {
+            this.showModal('voice-modal');
+            Speech.startSpeechRecognition();
+        });
+    }
+    
+    // File upload
+    if (this.elements.uploadButton && this.elements.fileUpload) {
+        this.elements.uploadButton.addEventListener('click', () => {
+            this.elements.fileUpload.click();
+        });
+        
+        this.elements.fileUpload.addEventListener('change', (e) => {
+            this.handleFileUpload(e.target.files);
+        });
+    }
+    
+    // Camera button is now handled by the Camera module
+    // The event listener is set up in Camera.init()
+    
+    // New chat button
+    if (this.elements.newChatButton) {
+        this.elements.newChatButton.addEventListener('click', () => {
+            Chat.startNewChat();
+        });
+    }
+    
+    // Settings button
+    if (this.elements.settingsButton) {
+        this.elements.settingsButton.addEventListener('click', () => {
+            this.showModal('settings-modal');
+            Settings.loadSettings();
+        });
+    }
+    
+    // Theme buttons
+    if (this.elements.lightThemeButton) {
+        this.elements.lightThemeButton.addEventListener('click', () => {
+            this.applyTheme('light');
+            Storage.updateSettings({ theme: 'light' });
+        });
+    }
+    
+    if (this.elements.darkThemeButton) {
+        this.elements.darkThemeButton.addEventListener('click', () => {
+            this.applyTheme('dark');
+            Storage.updateSettings({ theme: 'dark' });
+        });
+    }
+    
+    // Model selector
+    if (this.elements.modelSelector) {
+        this.elements.modelSelector.addEventListener('change', (e) => {
+            const modelId = e.target.value;
+            Models.selectModel(modelId);
+        });
+    }
+    
+    // Quick prompt buttons
+    document.querySelectorAll('.prompt-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if (this.elements.messageInput) {
+                this.elements.messageInput.value = e.target.textContent;
+                this.handleInputChange();
+                this.elements.messageInput.focus();
+            }
+        });
+    });
+    
+    // Node menu items
+    document.querySelectorAll('.node-menu-item').forEach(item => {
+        if (item.dataset.nodeType) {
+            item.addEventListener('click', () => {
+                if (typeof window.addNode === 'function') {
+                    window.addNode(item.dataset.nodeType, document.getElementById('node-canvas'));
+                } else {
+                    console.warn('addNode function not found');
+                    Utils.showToast('Node functionality not available', 'warning');
+                }
+            });
+        }
+    });
+    
+    // Execute all button for node workflow
+    const executeAllBtn = document.getElementById('execute-all-btn');
+    if (executeAllBtn) {
+        executeAllBtn.addEventListener('click', () => {
+            if (typeof window.executeRequests === 'function') {
+                window.executeRequests();
+            } else {
+                console.warn('executeRequests function not found');
+                Utils.showToast('Node execution functionality not available', 'warning');
+            }
+        });
+    }
+    
+    // Window resize handling
+    window.addEventListener('resize', Utils.debounce(() => {
+        // Auto collapse sidebar on small screens
+        if (window.innerWidth < 768 && !this.state.isSidebarCollapsed) {
+            this.toggleSidebar(true);
+        }
+    }, 250));
   },
   
   /**

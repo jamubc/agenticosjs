@@ -158,6 +158,17 @@
                             <div class="node-menu-item" data-node-type="URL" id="url">Deep Research Node</div>
                             <div class="node-menu-item" data-node-type="PICTURE" id="picture">Multi Modal Node</div>
                             <div class="node-menu-item" data-node-type="CHAT" id="chat">CHAT</div>
+                            <div class="node-menu-item" data-node-type="HTTP_REQUEST" id="http-request">HTTP Request</div>
+                            <hr/>
+                            <br>
+                            <h3>Triggers</h3>
+                            <div class="node-menu-item" data-node-type="CLICK_TRIGGER" id="click-trigger">Click Trigger</div>
+                            <div class="node-menu-item" data-node-type="WEBHOOK_TRIGGER" id="webhook-trigger">Webhook Trigger</div>
+                            <div class="node-menu-item" data-node-type="TIMER_TRIGGER" id="timer-trigger">Timer Trigger</div>
+                            <hr/>
+                            <br>
+                            <h3>Output</h3>
+                            <div class="node-menu-item" data-node-type="DISPLAY" id="display">Display Node</div>
                             <hr/>
                             <br>
                             <h3>Other</h3>
@@ -565,7 +576,7 @@
             nodeWorkflowTab.addEventListener('click', initWorkflow);
           }
         });
-    </script>
+      </script>
     <style>
       .modal-container, .alert-container {
         display: none;
@@ -614,5 +625,40 @@
         padding-top: 15px;
       }
     </style>
+    <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Create a global initialization function to ensure node module functions are available
+    window.initializeNodeFunctions = function() {
+      // Default implementations to prevent errors
+      if (typeof window.addNode !== 'function') {
+        window.addNode = function(nodeType, canvas) {
+          console.log(`Creating node of type: ${nodeType}`);
+          // Will be replaced by actual implementation from nodeModule.js
+        };
+      }
+      
+      if (typeof window.executeRequests !== 'function') {
+        window.executeRequests = function() {
+          console.log('Executing workflow');
+          // Will be replaced by actual implementation from nodeModule.js
+        };
+      }
+    };
+    
+    // Initialize fallback functions immediately
+    window.initializeNodeFunctions();
+    
+    // Add a listener for the node workflow tab to ensure functions are available
+    const nodeWorkflowTab = document.querySelector('.tab-button[data-tab="node-workflow-tab"]');
+    if (nodeWorkflowTab) {
+      nodeWorkflowTab.addEventListener('click', function() {
+        // Re-check if functions are available after a small delay
+        setTimeout(function() {
+          window.initializeNodeFunctions();
+        }, 500);
+      });
+    }
+  });
+</script>
 </body>
 </html>
