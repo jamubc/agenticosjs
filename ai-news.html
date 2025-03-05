@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>IntelliFlow AI News</title> 
+        <meta name="description" content="Latest news and updates on AI technologies, tools, and advancements in the artificial intelligence industry.">
+        <meta name="keywords" content="AI news, artificial intelligence, AI tools, AI releases, AI companies">
+        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
+        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    
+        <link rel="preload" href="css/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <link rel="preload" href="css/specialstyles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <link rel="stylesheet" href="css/ai-news.css">
+    
+        <noscript><link rel="stylesheet" href="css/styles.css"></noscript>
+        <noscript><link rel="stylesheet" href="css/specialstyles.css"></noscript>
+    </head>
+<body>
+    <div id="app-container" class="theme-default">
+        <!-- Compact header navigation bar -->
+        <header class="news-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo-container">
+                        <a href="index.html"><img src="assets/logo.png" alt="IntelliFlow Logo" class="logo"></a>
+                        <a href="index.html"><h1 class="site-title">IntelliFlow</h1></a>
+                    </div>
+                    <nav class="main-nav">
+                        <ul class="nav-links">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="ai-news.html" class="active">AI News</a></li>
+                            <li><a href="#">Resources</a></li>
+                            <li><a href="#">Community</a></li>
+                        </ul>
+                    </nav>
+                    <div class="nav-actions">
+                        <button class="theme-toggle-btn" aria-label="Toggle dark mode">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                        <button class="mobile-menu-btn" aria-label="Toggle menu">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="news-main">
+            <div class="container">
+                <!-- Hero section -->
+                <section class="hero-section">
+                    <h1>Stay Updated with AI News</h1>
+                    <p class="hero-subtitle">Latest developments, tools, and breakthroughs in the world of artificial intelligence</p>
+                    
+                    <div class="categories-filter">
+                        <button class="category-btn active" data-category="all">All News</button>
+                        <button class="category-btn" data-category="tools">Tools & Libraries</button>
+                        <button class="category-btn" data-category="research">Research</button>
+                        <button class="category-btn" data-category="industry">Industry News</button>
+                        <button class="category-btn" data-category="events">Events</button>
+                    </div>
+                </section>
+
+                <!-- Featured articles -->
+                <section class="featured-section">
+                    <h2 class="section-title">Featured Stories</h2>
+                    <div class="featured-grid">
+                        <article class="featured-card main-feature">
+                            <div class="card-image-container">
+                                <img src="https://placehold.co/800x500" alt="AI research breakthrough" class="card-image">
+                                <div class="card-tag">Research</div>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Major Breakthrough in Large Language Model Efficiency Announced</h3>
+                                <p class="card-excerpt">Researchers have developed a new technique that reduces computational requirements for LLMs by 40% while maintaining performance.</p>
+                                <div class="card-meta">
+                                    <span class="publish-date"><i class="far fa-calendar"></i> March 1, 2025</span>
+                                    <a href="#" class="read-more">Read more <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="featured-card">
+                            <div class="card-image-container">
+                                <img src="https://placehold.co/400x300" alt="New AI tool release" class="card-image">
+                                <div class="card-tag">Tools</div>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">OpenAI Releases New Developer Tools for Custom GPT Integration</h3>
+                                <p class="card-excerpt">The new suite of tools makes it easier than ever to integrate AI capabilities into applications.</p>
+                                <div class="card-meta">
+                                    <span class="publish-date"><i class="far fa-calendar"></i> February 28, 2025</span>
+                                    <a href="#" class="read-more">Read more <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="featured-card">
+                            <div class="card-image-container">
+                                <img src="https://placehold.co/400x300" alt="AI industry news" class="card-image">
+                                <div class="card-tag">Industry</div>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Tech Giants Announce Joint Initiative on AI Safety Standards</h3>
+                                <p class="card-excerpt">Leading technology companies have formed a coalition to develop and promote standards for responsible AI development.</p>
+                                <div class="card-meta">
+                                    <span class="publish-date"><i class="far fa-calendar"></i> February 25, 2025</span>
+                                    <a href="#" class="read-more">Read more <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- Latest news section -->
+                <section class="latest-news-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Latest Updates</h2>
+                        <div class="view-options">
+                            <button class="view-btn active" data-view="grid"><i class="fas fa-th-large"></i></button>
+                            <button class="view-btn" data-view="list"><i class="fas fa-list"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="news-grid" id="news-container">
+                        <!-- News articles will be populated here -->
+                        <article class="news-card" data-category="tools">
+                            <div class="card-image-container">
+                                <img src="https://placehold.co/400x250" alt="AI tool news" class="card-image">
+                                <div class="card-tag">Tools</div>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Google Releases TensorFlow 2.15 with Enhanced Performance</h3>
+                                <p class="card-excerpt">The latest update brings significant improvements to model training speed and deployment options.</p>
+                                <div class="card-meta">
+                                    <span class="publish-date"><i class="far fa-calendar"></i> February 24, 2025</span>
+                                    <a href="#" class="read-more">Read more <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="news-card" data-category="research">
+                            <div class="card-image-container">
+                                <img src="https://placehold.co/400x250" alt="AI research news" class="card-image">
+                                <div class="card-tag">Research</div>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">New Paper Shows Progress in Multimodal Learning for Medical Diagnostics</h3>
+                                <p class="card-excerpt">Researchers demonstrate how combining multiple data types can significantly improve diagnostic accuracy.</p>
+                                <div class="card-meta">
+                                    <span class="publish-date"><i class="far fa-calendar"></i> February 22, 2025</span>
+                                    <a href="#" class="read-more">Read more <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="news-card" data-category="industry">
+                            <div class="card-image-container">
+                                <img src="https://placehold.co/400x250" alt="AI startup news" class="card-image">
+                                <div class="card-tag">Industry</div>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">AI Startup Funding Reaches New Heights in Q1 2025</h3>
+                                <p class="card-excerpt">Venture capital investments in AI companies have increased by 30% compared to the previous quarter.</p>
+                                <div class="card-meta">
+                                    <span class="publish-date"><i class="far fa-calendar"></i> February 20, 2025</span>
+                                    <a href="#" class="read-more">Read more <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="news-card" data-category="events">
+                            <div class="card-image-container">
+                                <img src="https://placehold.co/400x250" alt="AI conference news" class="card-image">
+                                <div class="card-tag">Events</div>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Annual AI Summit Announces Speaker Lineup and Exhibition Details</h3>
+                                <p class="card-excerpt">The event will feature keynotes from leading researchers and industry experts, as well as demonstrations of cutting-edge technology.</p>
+                                <div class="card-meta">
+                                    <span class="publish-date"><i class="far fa-calendar"></i> February 18, 2025</span>
+                                    <a href="#" class="read-more">Read more <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="news-card" data-category="tools">
+                            <div class="card-image-container">
+                                <img src="https://placehold.co/400x250" alt="AI tools news" class="card-image">
+                                <div class="card-tag">Tools</div>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">PyTorch Foundation Announces New Vision Libraries for Edge Devices</h3>
+                                <p class="card-excerpt">The new toolkit enables efficient deployment of computer vision models on resource-constrained hardware.</p>
+                                <div class="card-meta">
+                                    <span class="publish-date"><i class="far fa-calendar"></i> February 15, 2025</span>
+                                    <a href="#" class="read-more">Read more <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="news-card" data-category="research">
+                            <div class="card-image-container">
+                                <img src="https://placehold.co/400x250" alt="AI research news" class="card-image">
+                                <div class="card-tag">Research</div>
+                            </div>
+                            <div class="card-content">
+                                <h3 class="card-title">Breakthrough in Reinforcement Learning From Human Feedback</h3>
+                                <p class="card-excerpt">A new approach makes RLHF more efficient and effective for aligning AI systems with human values.</p>
+                                <div class="card-meta">
+                                    <span class="publish-date"><i class="far fa-calendar"></i> February 12, 2025</span>
+                                    <a href="#" class="read-more">Read more <i class="fas fa-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <div class="pagination">
+                        <button class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                        <button class="pagination-btn active">1</button>
+                        <button class="pagination-btn">2</button>
+                        <button class="pagination-btn">3</button>
+                        <button class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </section>
+
+                <!-- Newsletter section -->
+                <section class="newsletter-section">
+                    <div class="newsletter-container">
+                        <div class="newsletter-content">
+                            <h2>Never Miss an AI Update</h2>
+                            <p>Subscribe to our newsletter for weekly updates on the latest AI news, tools, research, and events.</p>
+                            <form class="newsletter-form">
+                                <input type="email" placeholder="Your email address" required>
+                                <button type="submit" class="submit-btn">Subscribe</button>
+                            </form>
+                            <p class="form-note">We respect your privacy. Unsubscribe anytime.</p>
+                        </div>
+                        <div class="newsletter-image">
+                            <img src="https://placehold.co/400x300" alt="Newsletter illustration">
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-brand">
+                        <img src="assets/logo.png" alt="IntelliFlow Logo" class="footer-logo">
+                        <p class="footer-tagline">Empowering AI exploration and innovation</p>
+                    </div>
+                    <div class="footer-links">
+                        <div class="footer-nav">
+                            <h3>Navigation</h3>
+                            <ul>
+                                <li><a href="index.html">Home</a></li>
+                                <li><a href="ai-news.html">AI News</a></li>
+                                <li><a href="#">Resources</a></li>
+                                <li><a href="#">Community</a></li>
+                                <li><a href="#">About Us</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-nav">
+                            <h3>News Categories</h3>
+                            <ul>
+                                <li><a href="#">AI Tools</a></li>
+                                <li><a href="#">Research</a></li>
+                                <li><a href="#">Industry News</a></li>
+                                <li><a href="#">Events</a></li>
+                                <li><a href="#">Tutorials</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-nav">
+                            <h3>Follow Us</h3>
+                            <div class="social-links">
+                                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                                <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                                <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 IntelliFlow. All rights reserved.</p>
+                    <div class="legal-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme toggle functionality
+            const themeToggleBtn = document.querySelector('.theme-toggle-btn');
+            const appContainer = document.getElementById('app-container');
+            
+            themeToggleBtn.addEventListener('click', function() {
+                if (appContainer.classList.contains('theme-dark')) {
+                    appContainer.classList.remove('theme-dark');
+                    appContainer.classList.add('theme-default');
+                    themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+                } else {
+                    appContainer.classList.remove('theme-default');
+                    appContainer.classList.add('theme-dark');
+                    themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+                }
+            });
+
+            // Mobile menu toggle
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const mainNav = document.querySelector('.main-nav');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                mainNav.classList.toggle('active');
+            });
+
+            // Category filter functionality
+            const categoryBtns = document.querySelectorAll('.category-btn');
+            const newsCards = document.querySelectorAll('.news-card');
+            
+            categoryBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    categoryBtns.forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    const category = this.dataset.category;
+                    
+                    // Show or hide news cards based on category
+                    newsCards.forEach(card => {
+                        if (category === 'all' || card.dataset.category === category) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // View toggle functionality (grid/list)
+            const viewBtns = document.querySelectorAll('.view-btn');
+            const newsContainer = document.getElementById('news-container');
+            
+            viewBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    viewBtns.forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    const view = this.dataset.view;
+                    
+                    // Change view class on news container
+                    if (view === 'list') {
+                        newsContainer.classList.remove('news-grid');
+                        newsContainer.classList.add('news-list');
+                    } else {
+                        newsContainer.classList.remove('news-list');
+                        newsContainer.classList.add('news-grid');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
