@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jamubc/gitt1.git"
+    "url": "git+https://github.com/jamubc/agenticosjs.git"
   },
   "keywords": [
     "ai",
@@ -20,9 +20,9 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jamubc/gitt1/issues"
+    "url": "https://github.com/jamubc/agenticosjs/issues"
   },
-  "homepage": "https://github.com/jamubc/gitt1#readme",
+  "homepage": "https://github.com/jamubc/agenticosjs#readme",
   "devDependencies": {
     "serve": "^14.2.1"
   },
