@@ -151,52 +151,10 @@ a {
     position: relative;
 }
 
-/* Sidebar Styles */
-#sidebar {
-    width: var(--sidebar-width);
-    height: 100vh;
-    background-color: var(--bg-secondary);
-    border-right: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    transition: width var(--transition-speed) ease;
-    z-index: 10;
-    overflow: hidden;
-}
-
 #app-container.sidebar-collapsed #sidebar {
     width: var(--sidebar-collapsed-width);
 }
 
-.sidebar-header {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    height: var(--header-height);
-    border-bottom: 1px solid var(--border-color);
-}
-
-.logo {
-    width: 32px;
-    height: 32px;
-    margin-right: 0.75rem;
-}
-
-.app-title {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
-    flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: opacity var(--transition-speed) ease;
-}
-
-#app-container.sidebar-collapsed .app-title {
-    opacity: 0;
-    width: 0;
-    margin: 0;
-}
 
 #sidebar-toggle {
     display: flex;

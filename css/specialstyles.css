@@ -1,0 +1,159 @@
+/* Base Variables - Pepe Theme (Chromatic Style) */
+:root {
+    /* Colors */
+    --primary-color: #22c55e;    /* Vibrant green for Pepe */
+    --primary-hover: #16a34a;    /* Darker green for hover */
+    --secondary-color: #6366f1;  /* Indigo for contrast */
+    --secondary-hover: #4f46e5;  /* Darker indigo */
+    --success-color: #10b981;    /* Teal for success */
+    --danger-color: #ef4444;     /* Red for danger */
+    --warning-color: #f97316;    /* Orange for warning */
+    --info-color: #a855f7;       /* Purple for info */
+
+    /* Background Colors */
+    --bg-primary: #ffffff;       /* White for main areas */
+    --bg-secondary: #f0fdf4;     /* Very light green for sidebar */
+    --bg-tertiary: #f9fafb;      /* Light gray for subtle contrast */
+    --bg-accent: #ecfdf5;        /* Light green accent */
+
+    /* Text Colors */
+    --text-primary: #1f2937;     /* Dark gray for readability */
+    --text-secondary: #4b5563;   /* Medium gray */
+    --text-tertiary: #6b7280;    /* Lighter gray */
+    --text-on-primary: #ffffff;  /* White for text on colored backgrounds */
+
+    /* Border Colors */
+    --border-color: #d1d5db;     /* Neutral light gray */
+    --border-focus: #22c55e;     /* Green to match primary */
+
+    /* UI Elements - unchanged */
+    --sidebar-width: 280px;
+    --sidebar-collapsed-width: 72px;
+    --header-height: 64px;
+    --input-height: 56px;
+    --border-radius-sm: 4px;
+    --border-radius: 8px;
+    --border-radius-lg: 12px;
+    --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --transition-speed: 0.3s;
+
+    /* Typography - unchanged */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --line-height: 1.5;
+}
+
+/* Dark Pepe Theme */
+.theme-dark {
+    --primary-color: #44b549;       /* Keep Pepe green as accent */
+    --primary-hover: #56c95c;       /* Brighter green on hover for contrast */
+    --bg-primary: #0a0a0a;          /* Near black for main background */
+    --bg-secondary: #121212;        /* Very dark gray for secondary areas */
+    --bg-tertiary: #1e1e1e;         /* Dark gray for tertiary backgrounds */
+    --bg-accent: #2a2a2a;           /* Medium-dark gray for accents */
+    --text-primary: #f0fff0;        /* Very light green tint for main text */
+    --text-secondary: #c5e8c5;      /* Light green for secondary text */
+    --text-tertiary: #8bc98b;       /* Muted green for tertiary text */
+    --border-color: #333333;        /* Dark gray for borders */
+    --border-focus: #44b549;        /* Pepe green for focus states */
+    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);  /* Darker shadow for dark mode */
+}
+
+/* Light Theme (keeping for option) */
+.theme-light {
+    --primary-color: #0284c7;
+    --primary-hover: #0369a1;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-tertiary: #f1f5f9;
+    --bg-accent: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-tertiary: #64748b;
+    --border-color: #e2e8f0;
+}
+
+/* Chroma Effect Animation */
+@keyframes chromaMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Apply Chroma Effect to TITLE elements */
+.TITLE {
+    background-image: linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+    background-size: 200% auto;
+    color: transparent;
+    background-clip: text;
+    -webkit-background-clip: text;
+    animation: chromaMove 3s linear infinite;
+}
+
+/* Style for the version text */
+.app-title .version-text {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    background-image: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+    animation: none;
+    text-shadow: none;
+}
+
+#main_title_text_top_left {
+    font-size: var(--font-size-2xl); /* 1.5rem, larger than 1.125rem */
+    text-shadow: 1px 0 1px rgba(255, 0, 0, 0.3), -1px 0 1px rgba(0, 255, 255, 0.3);
+}
+
+.logo {
+    width: 32px;
+    height: 32px;
+    margin-right: 0.75rem;
+}
+
+/* Sidebar Styles */
+#sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    background-color: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    transition: width var(--transition-speed) ease;
+    z-index: 10;
+    overflow: hidden;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    height: var(--header-height);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.app-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: opacity var(--transition-speed) ease;
+}
+
+#app-container.sidebar-collapsed .app-title {
+    opacity: 0; 
+    width: 0;
+    margin: 0;
+}
